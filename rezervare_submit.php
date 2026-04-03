@@ -1,46 +1,66 @@
 <?php
 require_once __DIR__ . '/includes/config.php';
-
-if (!isset($_SESSION['user_id'])) {
-    die('Trebuie sa fii autentificat pentru a face o rezervare.');
-}
+require_login();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: index.php");
+    header('Location: ' . url('rezervare.php'));
     exit;
 }
 
-$id_locatie   = (int)($_POST['id_locatie'] ?? 0);
-$titlu        = trim($_POST['titlu'] ?? '');
-$data_ev      = $_POST['data_eveniment'] ?? '';
-$ora_i        = $_POST['ora_inceput'] ?? '';
-$ora_f        = $_POST['ora_sfarsit'] ?? '';
-$descriere    = trim($_POST['descriere'] ?? '');
-$id_user      = $_SESSION['user_id'];
+$idLocatie = (int)($_POST['id_locatie'] ?? 0);
+$titlu = trim($_POST['titlu'] ?? '');
+$dataEveniment = trim($_POST['data_eveniment'] ?? '');
+$oraInceput = trim($_POST['ora_inceput'] ?? '');
+$oraSfarsit = trim($_POST['ora_sfarsit'] ?? '');
+$descriere = trim($_POST['descriere'] ?? '');
+$numarLocuri = max(1, (int)($_POST['numar_locuri'] ?? 1));
+$pret = (float)($_POST['pret'] ?? 0);
+$idUtilizator = (int)$_SESSION['user_id'];
 
-if (!$id_locatie || !$titlu || !$data_ev || !$ora_i || !$ora_f) {
-    die('Campuri lipsa pentru rezervare.');
+if ($idLocatie <= 0 || $titlu === '' || $dataEveniment === '' || $oraInceput === '' || $oraSfarsit === '') {
+    set_flash('warning', 'Completeaza toate campurile obligatorii.');
+    header('Location: ' . url('rezervare.php?locatie=' . $idLocatie . '&data=' . urlencode($dataEveniment)));
+    exit;
 }
 
-$stmt = $pdo->prepare("
-    INSERT INTO evenimente (titlu, descriere, data_eveniment, ora_inceput, ora_sfarsit, pret, id_locatie)
-    VALUES (?, ?, ?, ?, ?, 0, ?)
-");
-$stmt->execute([$titlu, $descriere, $data_ev, $ora_i, $ora_f, $id_locatie]);
+if ($oraInceput >= $oraSfarsit) {
+    set_flash('warning', 'Intervalul orar este invalid.');
+    header('Location: ' . url('rezervare.php?locatie=' . $idLocatie . '&data=' . urlencode($dataEveniment)));
+    exit;
+}
 
-$id_eveniment = $pdo->lastInsertId();
+$conflictStmt = $pdo->prepare("SELECT COUNT(*)
+                               FROM evenimente
+                               WHERE id_locatie = ?
+                                 AND data_eveniment = ?
+                                 AND NOT (? >= ora_sfarsit OR ? <= ora_inceput)");
+$conflictStmt->execute([$idLocatie, $dataEveniment, $oraInceput, $oraSfarsit]);
+if ((int)$conflictStmt->fetchColumn() > 0) {
+    set_flash('danger', 'Exista deja un eveniment in acel interval.');
+    header('Location: ' . url('rezervare.php?locatie=' . $idLocatie . '&data=' . urlencode($dataEveniment)));
+    exit;
+}
 
-$stmt2 = $pdo->prepare("
-    INSERT INTO rezervari (id_utilizator, id_eveniment, numar_locuri, status)
-    VALUES (?, ?, 1, 'activa')
-");
-$stmt2->execute([$id_user, $id_eveniment]);
+try {
+    $pdo->beginTransaction();
 
-require 'includes/layout.php';
-render_header('Rezervare realizata');
-?>
-<div class="alert alert-success mt-3">
-    Rezervarea a fost inregistrata cu succes pentru evenimentul: <strong><?= htmlspecialchars($titlu) ?></strong>.
-</div>
-<a href="index.php" class="btn btn-primary mt-2">Inapoi la pagina principala</a>
-<?php render_footer(); ?>
+    $stmt = $pdo->prepare('INSERT INTO evenimente (titlu, descriere, data_eveniment, ora_inceput, ora_sfarsit, pret, id_locatie)
+                           VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$titlu, $descriere, $dataEveniment, $oraInceput, $oraSfarsit, $pret, $idLocatie]);
+    $idEveniment = (int)$pdo->lastInsertId();
+
+    insert_rezervare_compatible($pdo, $idUtilizator, $idEveniment, $numarLocuri);
+
+    $pdo->commit();
+    set_flash('success', 'Rezervarea a fost salvata cu succes.');
+    header('Location: ' . url('rezervarile-mele.php'));
+    exit;
+} catch (Throwable $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+
+    set_flash('danger', 'A aparut o eroare la salvare. Verifica schema tabelelor evenimente si rezervari.');
+    header('Location: ' . url('rezervare.php?locatie=' . $idLocatie . '&data=' . urlencode($dataEveniment)));
+    exit;
+}

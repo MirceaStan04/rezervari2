@@ -1,47 +1,40 @@
 <?php
-require_once __DIR__ . '/../includes/config.php';
-require '../includes/layout.php';
-require 'admin_check.php';
+require_once __DIR__ . '/admin_check.php';
+require __DIR__ . '/../includes/layout.php';
 
-$users = $pdo->query("SELECT id_utilizator, nume, email, rol FROM utilizatori ORDER BY id_utilizator")->fetchAll();
-
-render_header('Utilizatori – Admin');
+$users = $pdo->query('SELECT id_utilizator, nume, email, rol, data_creare FROM utilizatori ORDER BY id_utilizator DESC')->fetchAll();
+render_header('Admin - utilizatori');
 ?>
-
 <section class="mb-4">
-    <div class="section-card p-4 p-lg-5">
-        <h1 class="section-title mb-2">Utilizatori în sistem</h1>
-        <p class="section-subtitle mb-0">Vizualizare rapidă a conturilor create în platformă.</p>
-    </div>
+    <span class="card-tag mb-3"><i class="bi bi-people"></i> utilizatori</span>
+    <h1 class="section-title mb-2">Conturi din sistem</h1>
+    <p class="section-subtitle">Am schimbat listarea in profile cards, pastrand informatia utila din baza de date.</p>
 </section>
 
 <?php if ($users): ?>
-    <div class="table-shell">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nume</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($users as $u): ?>
-                        <tr>
-                            <td><?= (int)$u['id_utilizator'] ?></td>
-                            <td class="fw-semibold"><?= htmlspecialchars($u['nume']) ?></td>
-                            <td><?= htmlspecialchars($u['email']) ?></td>
-                            <td><span class="badge text-bg-dark rounded-pill px-3 py-2"><?= htmlspecialchars($u['rol']) ?></span></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+    <div class="user-grid">
+        <?php foreach ($users as $user): ?>
+            <article class="card-surface user-card">
+                <div class="user-card__body">
+                    <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                        <div>
+                            <span class="card-tag mb-2">ID user #<?= (int)$user['id_utilizator'] ?></span>
+                            <h2 class="h4 mb-1"><?= e($user['nume']) ?></h2>
+                            <div class="text-secondary-emphasis small"><?= e($user['email']) ?></div>
+                        </div>
+                        <span class="<?= ($user['rol'] ?? '') === 'admin' ? 'badge-soft success' : 'badge-soft neutral' ?>"><?= e($user['rol'] ?? 'user') ?></span>
+                    </div>
+                    <div class="table-lite small">
+                        <table class="table-lite">
+                            <tr><td class="text-secondary-emphasis">Creat la</td><td><?= e(format_date_ro($user['data_creare'] ?? '')) ?></td></tr>
+                            <tr><td class="text-secondary-emphasis">Email</td><td><?= e($user['email']) ?></td></tr>
+                        </table>
+                    </div>
+                </div>
+            </article>
+        <?php endforeach; ?>
     </div>
 <?php else: ?>
-    <div class="empty-state">Nu există utilizatori înregistrați.</div>
+    <div class="glass-panel empty-state">Nu exista utilizatori inregistrati.</div>
 <?php endif; ?>
-
 <?php render_footer(); ?>

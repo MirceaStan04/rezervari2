@@ -1,12 +1,10 @@
 <?php
 require_once __DIR__ . '/includes/config.php';
-require 'includes/layout.php';
+require __DIR__ . '/includes/layout.php';
 
-$mesaj = '';
-$tipMesaj = 'info';
-
-if (isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+if (is_logged_in()) {
+    set_flash('info', 'Esti deja autentificat.');
+    header('Location: ' . url('index.php'));
     exit;
 }
 
@@ -14,59 +12,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $parola = $_POST['parola'] ?? '';
 
-    if ($email && $parola) {
-        $stmt = $pdo->prepare("SELECT * FROM utilizatori WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
-
-        if ($user && password_verify($parola, $user['parola'])) {
-            $_SESSION['user_id'] = $user['id_utilizator'];
-            $_SESSION['nume'] = $user['nume'];
-            $_SESSION['rol'] = $user['rol'];
-            header('Location: index.php');
-            exit;
-        }
-
-        $mesaj = 'Emailul sau parola sunt incorecte.';
-        $tipMesaj = 'danger';
-    } else {
-        $mesaj = 'Completează emailul și parola.';
-        $tipMesaj = 'warning';
+    if ($email === '' || $parola === '') {
+        set_flash('warning', 'Completeaza emailul si parola.');
+        header('Location: ' . url('login.php'));
+        exit;
     }
+
+    $stmt = $pdo->prepare('SELECT * FROM utilizatori WHERE email = ?');
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+
+    if (!$user || !password_verify($parola, $user['parola'])) {
+        set_flash('danger', 'Credentiale invalide.');
+        header('Location: ' . url('login.php'));
+        exit;
+    }
+
+    $_SESSION['user_id'] = $user['id_utilizator'];
+    $_SESSION['nume'] = $user['nume'];
+    $_SESSION['rol'] = $user['rol'] ?? 'user';
+
+    set_flash('success', 'Autentificare reusita.');
+    $target = $_SESSION['last_page'] ?? url('index.php');
+    if (preg_match('#/(login|register)\.php$#', $target)) {
+        $target = url('index.php');
+    }
+
+    header('Location: ' . $target);
+    exit;
 }
 
-render_header('Login – Rezervări Evenimente Sibiu');
+render_header('Login - Crimson Reserve');
 ?>
-
-<div class="auth-card p-4 p-lg-5">
+<section class="auth-card glass-panel p-4 p-lg-5">
     <div class="text-center mb-4">
-        <span class="feature-icon mb-3"><i class="bi bi-box-arrow-in-right"></i></span>
-        <h1 class="section-title mb-2">Autentificare</h1>
-        <p class="section-subtitle mx-auto mb-0">Intră în cont pentru a rezerva locații și a gestiona cererile tale.</p>
+        <span class="card-tag mb-3"><i class="bi bi-box-arrow-in-right"></i> acces in platforma</span>
+        <h1 class="section-title mb-2">Bine ai revenit</h1>
+        <p class="section-subtitle mb-0 mx-auto">Autentifica-te pentru a trimite cereri, a vedea rezervarile tale si a intra in dashboard.</p>
     </div>
 
-    <?php if ($mesaj): ?>
-        <div class="alert alert-<?= htmlspecialchars($tipMesaj) ?> rounded-4 border-0"><?= htmlspecialchars($mesaj) ?></div>
-    <?php endif; ?>
-
-    <form method="post" autocomplete="off" class="row g-3">
+    <form method="post" class="row g-3" autocomplete="off">
         <div class="col-12">
-            <label class="form-label fw-semibold">Email</label>
-            <input type="email" name="email" class="form-control" placeholder="nume@email.com" required>
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required placeholder="nume@email.com">
         </div>
         <div class="col-12">
-            <label class="form-label fw-semibold">Parolă</label>
-            <input type="password" name="parola" class="form-control" placeholder="Introdu parola" required>
+            <label class="form-label">Parola</label>
+            <input type="password" name="parola" class="form-control" required placeholder="Introdu parola ta">
         </div>
-        <div class="col-12 d-grid">
-            <button class="btn btn-primary" type="submit"><i class="bi bi-door-open me-2"></i>Login</button>
+        <div class="col-12 d-grid gap-2 mt-2">
+            <button class="btn btn-crimson btn-lg rounded-pill" type="submit">Intra in cont</button>
+            <a href="<?= e(url('register.php')) ?>" class="btn btn-soft rounded-pill">Nu ai cont? Creeaza unul</a>
         </div>
     </form>
-
-    <div class="text-center mt-4 text-muted">
-        Nu ai cont încă?
-        <a href="register.php" class="link-primary text-decoration-none fw-semibold">Creează unul aici</a>
-    </div>
-</div>
-
+</section>
 <?php render_footer(); ?>

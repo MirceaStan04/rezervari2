@@ -1,59 +1,71 @@
 <?php
-require_once __DIR__ . '/../includes/config.php';
-require '../includes/layout.php';
-require 'admin_check.php';
+require_once __DIR__ . '/admin_check.php';
+require __DIR__ . '/../includes/layout.php';
 
-$rezervari = $pdo->query("
-    SELECT r.*, u.nume AS nume_user, e.titlu AS titlu_eveniment
-    FROM rezervari r
-    JOIN utilizatori u ON r.id_utilizator = u.id_utilizator
-    JOIN evenimente e ON r.id_eveniment = e.id_eveniment
-    ORDER BY r.id_rezervare DESC
-")->fetchAll();
+$rezervari = $pdo->query("SELECT r.id_rezervare, r.status, r.numar_locuri, r.data_rezervare,
+                                 u.nume AS nume_utilizator, u.email,
+                                 e.titlu, e.data_eveniment, e.ora_inceput, e.ora_sfarsit,
+                                 l.nume_locatie
+                          FROM rezervari r
+                          JOIN utilizatori u ON r.id_utilizator = u.id_utilizator
+                          JOIN evenimente e ON r.id_eveniment = e.id_eveniment
+                          JOIN locatii l ON e.id_locatie = l.id_locatie
+                          ORDER BY r.id_rezervare DESC")->fetchAll();
 
-render_header('Gestionare Rezervări');
+$coloane = [
+    'in_asteptare' => [],
+    'aprobata' => [],
+    'respinsa' => [],
+];
+foreach ($rezervari as $rez) {
+    $key = normalize_status($rez['status']);
+    $coloane[$key] = $coloane[$key] ?? [];
+    $coloane[$key][] = $rez;
+}
+
+render_header('Admin - rezervari');
 ?>
-
 <section class="mb-4">
-    <div class="section-card p-4 p-lg-5">
-        <h1 class="section-title mb-2">Gestionare rezervări</h1>
-        <p class="section-subtitle mb-0">Monitorizezi utilizatorul, evenimentul, statusul și numărul de locuri rezervate.</p>
-    </div>
+    <span class="card-tag mb-3"><i class="bi bi-clipboard-check"></i> management rezervari</span>
+    <h1 class="section-title mb-2">Cereri de rezervare</h1>
+    <p class="section-subtitle">Am mutat pagina intr-un format de tip kanban, mult mai clar decat un tabel lung.</p>
 </section>
 
-<?php if ($rezervari): ?>
-    <div class="table-shell">
-        <div class="table-responsive">
-            <table class="table table-striped align-middle mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Utilizator</th>
-                        <th>Eveniment</th>
-                        <th>Status</th>
-                        <th>Locuri</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($rezervari as $r): ?>
-                        <tr>
-                            <td><?= (int)$r['id_rezervare'] ?></td>
-                            <td class="fw-semibold"><?= htmlspecialchars($r['nume_user']) ?></td>
-                            <td><?= htmlspecialchars($r['titlu_eveniment']) ?></td>
-                            <td>
-                                <span class="badge rounded-pill text-bg-<?= $r['status'] === 'activa' ? 'success' : 'secondary' ?> px-3 py-2">
-                                    <?= htmlspecialchars($r['status']) ?>
-                                </span>
-                            </td>
-                            <td><?= (int)$r['numar_locuri'] ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-<?php else: ?>
-    <div class="empty-state">Nu există rezervări înregistrate.</div>
-<?php endif; ?>
-
+<div class="kanban-grid">
+    <?php foreach (['in_asteptare' => 'In asteptare', 'aprobata' => 'Aprobate', 'respinsa' => 'Respinse'] as $key => $title): ?>
+        <section class="kanban-column">
+            <div class="panel-header mb-3">
+                <div>
+                    <h2 class="h5 mb-1"><?= e($title) ?></h2>
+                    <div class="text-secondary-emphasis small"><?= count($coloane[$key] ?? []) ?> cereri</div>
+                </div>
+            </div>
+            <?php if (!empty($coloane[$key])): ?>
+                <?php foreach ($coloane[$key] as $rez): ?>
+                    <article class="kanban-card">
+                        <div class="d-flex justify-content-between gap-3 flex-wrap mb-2">
+                            <strong>#<?= (int)$rez['id_rezervare'] ?> - <?= e($rez['titlu']) ?></strong>
+                            <span class="<?= e(status_badge_class($rez['status'])) ?>"><?= e(status_label($rez['status'])) ?></span>
+                        </div>
+                        <div class="small text-secondary-emphasis mb-3">
+                            <?= e($rez['nume_utilizator']) ?> • <?= e($rez['email']) ?><br>
+                            <?= e($rez['nume_locatie']) ?> • <?= e(format_date_ro($rez['data_eveniment'])) ?> • <?= e(substr($rez['ora_inceput'], 0, 5)) ?> - <?= e(substr($rez['ora_sfarsit'], 0, 5)) ?>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                            <span class="badge-soft neutral"><?= (int)$rez['numar_locuri'] ?> locuri</span>
+                            <?php if ($key === 'in_asteptare'): ?>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-crimson btn-sm rounded-pill" href="<?= e(url('admin/update_rezervare_status.php?id=' . (int)$rez['id_rezervare'] . '&action=approve')) ?>">Aproba</a>
+                                    <a class="btn btn-soft btn-sm rounded-pill" href="<?= e(url('admin/update_rezervare_status.php?id=' . (int)$rez['id_rezervare'] . '&action=reject')) ?>">Respinge</a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="empty-state py-4">Nimic aici momentan.</div>
+            <?php endif; ?>
+        </section>
+    <?php endforeach; ?>
+</div>
 <?php render_footer(); ?>

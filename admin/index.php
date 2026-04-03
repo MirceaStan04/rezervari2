@@ -1,52 +1,98 @@
 <?php
-require_once __DIR__ . '/../includes/config.php';
-require '../includes/layout.php';
-require 'admin_check.php';
+require_once __DIR__ . '/admin_check.php';
+require __DIR__ . '/../includes/layout.php';
 
-render_header('Panou Administrator');
+$stats = [
+    'locatii' => card_stat($pdo, 'locatii'),
+    'evenimente' => card_stat($pdo, 'evenimente'),
+    'rezervari' => card_stat($pdo, 'rezervari'),
+    'utilizatori' => card_stat($pdo, 'utilizatori'),
+];
+
+$rezervariRecente = $pdo->query("SELECT r.id_rezervare, r.status, r.numar_locuri,
+                                        u.nume AS nume_utilizator,
+                                        e.titlu, e.data_eveniment,
+                                        l.nume_locatie
+                                 FROM rezervari r
+                                 JOIN utilizatori u ON r.id_utilizator = u.id_utilizator
+                                 JOIN evenimente e ON r.id_eveniment = e.id_eveniment
+                                 JOIN locatii l ON e.id_locatie = l.id_locatie
+                                 ORDER BY r.id_rezervare DESC
+                                 LIMIT 6")->fetchAll();
+
+$statusGroups = ['in_asteptare' => 0, 'aprobata' => 0, 'respinsa' => 0];
+foreach ($rezervariRecente as $rez) {
+    $key = normalize_status($rez['status']);
+    if (isset($statusGroups[$key])) {
+        $statusGroups[$key]++;
+    }
+}
+
+render_header('Admin dashboard - Crimson Reserve');
 ?>
-
 <section class="mb-4">
-    <div class="hero-surface">
-        <span class="badge-soft bg-white bg-opacity-10 text-white border border-white border-opacity-10 mb-3"><i class="bi bi-shield-lock"></i> Panou administrator</span>
-        <h1 class="hero-title mb-2">Administrare rapidă a platformei</h1>
-        <p class="hero-subtitle mb-0">Gestionezi locațiile, evenimentele, rezervările și utilizatorii dintr-o interfață mai clară și mai aerisită.</p>
-    </div>
+    <span class="card-tag mb-3"><i class="bi bi-speedometer2"></i> zona de administrare</span>
+    <h1 class="section-title mb-2">Panou administrator</h1>
+    <p class="section-subtitle">Am inlocuit start page-ul basic cu un dashboard mai apropiat de o aplicatie reala.</p>
 </section>
 
-<div class="row g-4">
-    <div class="col-md-6 col-xl-3">
-        <div class="soft-card p-4 h-100 text-center app-card">
-            <span class="feature-icon mb-3"><i class="bi bi-building"></i></span>
-            <h2 class="h5 fw-bold">Locații</h2>
-            <p class="text-muted">Adaugă, verifică și organizează spațiile disponibile.</p>
-            <a href="locatii.php" class="btn btn-primary w-100">Gestionare</a>
-        </div>
-    </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="soft-card p-4 h-100 text-center app-card">
-            <span class="feature-icon mb-3"><i class="bi bi-calendar-event"></i></span>
-            <h2 class="h5 fw-bold">Evenimente</h2>
-            <p class="text-muted">Vezi programările, intervalele și locațiile asociate.</p>
-            <a href="evenimente.php" class="btn btn-primary w-100">Gestionare</a>
-        </div>
-    </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="soft-card p-4 h-100 text-center app-card">
-            <span class="feature-icon mb-3"><i class="bi bi-journal-check"></i></span>
-            <h2 class="h5 fw-bold">Rezervări</h2>
-            <p class="text-muted">Verifică cererile trimise și statusul fiecăreia.</p>
-            <a href="rezervari.php" class="btn btn-primary w-100">Vizualizare</a>
-        </div>
-    </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="soft-card p-4 h-100 text-center app-card">
-            <span class="feature-icon mb-3"><i class="bi bi-people"></i></span>
-            <h2 class="h5 fw-bold">Utilizatori</h2>
-            <p class="text-muted">Listă completă cu nume, email și rol pentru fiecare cont.</p>
-            <a href="utilizatori.php" class="btn btn-primary w-100">Vezi lista</a>
-        </div>
-    </div>
+<div class="dashboard-grid mb-5">
+    <a class="card-surface text-decoration-none" href="<?= e(url('admin/locatii.php')) ?>"><strong class="d-block fs-3"><?= (int)$stats['locatii'] ?></strong><span class="text-secondary-emphasis">locatii in sistem</span></a>
+    <a class="card-surface text-decoration-none" href="<?= e(url('admin/evenimente.php')) ?>"><strong class="d-block fs-3"><?= (int)$stats['evenimente'] ?></strong><span class="text-secondary-emphasis">evenimente create</span></a>
+    <a class="card-surface text-decoration-none" href="<?= e(url('admin/rezervari.php')) ?>"><strong class="d-block fs-3"><?= (int)$stats['rezervari'] ?></strong><span class="text-secondary-emphasis">rezervari totale</span></a>
+    <a class="card-surface text-decoration-none" href="<?= e(url('admin/utilizatori.php')) ?>"><strong class="d-block fs-3"><?= (int)$stats['utilizatori'] ?></strong><span class="text-secondary-emphasis">utilizatori inregistrati</span></a>
 </div>
 
+<section class="split-panel">
+    <div class="glass-panel p-4 p-lg-5">
+        <div class="panel-header">
+            <div>
+                <h2 class="section-title h3 mb-1">Rezervari recente</h2>
+                <p class="section-subtitle mb-0">Nu mai vezi doar butoane, ci si contextul sistemului.</p>
+            </div>
+        </div>
+        <?php if ($rezervariRecente): ?>
+            <div class="d-grid gap-3">
+                <?php foreach ($rezervariRecente as $rez): ?>
+                    <div class="highlight-card">
+                        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                            <div>
+                                <strong><?= e($rez['titlu']) ?></strong>
+                                <div class="inline-meta mt-2">
+                                    <span><i class="bi bi-person"></i> <?= e($rez['nume_utilizator']) ?></span>
+                                    <span><i class="bi bi-building"></i> <?= e($rez['nume_locatie']) ?></span>
+                                    <span><i class="bi bi-calendar2-week"></i> <?= e(format_date_ro($rez['data_eveniment'])) ?></span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="<?= e(status_badge_class($rez['status'])) ?> d-inline-flex mb-2"><?= e(status_label($rez['status'])) ?></span>
+                                <div class="small text-secondary-emphasis"><?= (int)$rez['numar_locuri'] ?> locuri</div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="empty-state">Nu exista rezervari pentru afisare.</div>
+        <?php endif; ?>
+    </div>
+
+    <aside class="glass-panel p-4 p-lg-5">
+        <div class="panel-header">
+            <div>
+                <h2 class="section-title h3 mb-1">Distribuire pe status</h2>
+                <p class="section-subtitle mb-0">Snapshot rapid pentru profesor sau client.</p>
+            </div>
+        </div>
+        <div class="d-grid gap-3">
+            <div class="stat-pill"><strong><?= (int)$statusGroups['in_asteptare'] ?></strong><span>cereri in asteptare</span></div>
+            <div class="stat-pill"><strong><?= (int)$statusGroups['aprobata'] ?></strong><span>cereri aprobate</span></div>
+            <div class="stat-pill"><strong><?= (int)$statusGroups['respinsa'] ?></strong><span>cereri respinse</span></div>
+        </div>
+        <div class="mt-4 d-grid gap-2">
+            <a href="<?= e(url('admin/rezervari.php')) ?>" class="btn btn-crimson rounded-pill">Gestioneaza rezervarile</a>
+            <a href="<?= e(url('admin/evenimente.php')) ?>" class="btn btn-soft rounded-pill">Vezi agenda completa</a>
+        </div>
+    </aside>
+</section>
 <?php render_footer(); ?>

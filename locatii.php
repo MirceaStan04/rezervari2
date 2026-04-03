@@ -1,59 +1,38 @@
 <?php
 require_once __DIR__ . '/includes/config.php';
-require 'includes/layout.php';
+require __DIR__ . '/includes/layout.php';
 
-$locatii = $pdo->query("SELECT * FROM locatii ORDER BY id_locatie ASC")->fetchAll();
+$locatii = $pdo->query('SELECT id_locatie, nume_locatie, adresa, capacitate, poza FROM locatii ORDER BY nume_locatie ASC')->fetchAll();
 
-render_header('Locații – Rezervări Evenimente Sibiu');
+render_header('Locatii - Crimson Reserve');
 ?>
-
 <section class="mb-4">
-    <div class="section-card p-4 p-lg-5">
-        <span class="badge-soft mb-3"><i class="bi bi-building"></i> Locații disponibile</span>
-        <h1 class="section-title mb-2">Alege spațiul potrivit pentru evenimentul tău</h1>
-        <p class="section-subtitle mb-0">
-            Fiecare locație include adresă, capacitate și acces rapid la calendarul de disponibilitate.
-        </p>
-    </div>
+    <span class="card-tag mb-3"><i class="bi bi-buildings"></i> catalog locatii</span>
+    <h1 class="section-title mb-2">Locatii disponibile pentru evenimente</h1>
+    <p class="section-subtitle">Am inlocuit listarea minimalista cu un catalog vizual, usor de vandut in fata unui profesor sau client.</p>
 </section>
 
 <?php if ($locatii): ?>
-    <div class="row g-4">
+    <div class="location-grid">
         <?php foreach ($locatii as $loc): ?>
-            <div class="col-md-6 col-xl-4">
-                <article class="location-card h-100">
-                    <?php if (!empty($loc['poza'])): ?>
-                        <img src="<?= htmlspecialchars($loc['poza']) ?>" alt="<?= htmlspecialchars($loc['nume_locatie']) ?>" class="location-img">
-                    <?php else: ?>
-                        <div class="location-img d-flex justify-content-center align-items-center text-muted">
-                            <i class="bi bi-image fs-1"></i>
-                        </div>
-                    <?php endif; ?>
-
-                    <div class="p-4">
-                        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
-                            <div>
-                                <h2 class="h4 fw-bold mb-1"><?= htmlspecialchars($loc['nume_locatie']) ?></h2>
-                                <p class="text-muted mb-0"><i class="bi bi-geo-alt-fill me-1"></i><?= htmlspecialchars($loc['adresa']) ?></p>
-                            </div>
-                            <span class="badge-soft"><i class="bi bi-people-fill"></i><?= (int)$loc['capacitate'] ?></span>
-                        </div>
-
-                        <div class="soft-card p-3 mb-3">
-                            <div class="small text-uppercase text-muted fw-semibold mb-1">Capacitate</div>
-                            <div class="fw-bold fs-5"><?= (int)$loc['capacitate'] ?> persoane</div>
-                        </div>
-
-                        <a href="locatie.php?id=<?= (int)$loc['id_locatie'] ?>" class="btn btn-primary w-100">
-                            <i class="bi bi-calendar3 me-2"></i>Vezi disponibilitatea
-                        </a>
+            <article class="card-surface location-card">
+                <img class="location-card__image" src="<?= e(loc_image($loc['poza'] ?? '')) ?>" alt="<?= e($loc['nume_locatie']) ?>">
+                <div class="location-card__body">
+                    <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-2">
+                        <span class="card-tag"><i class="bi bi-geo-alt"></i> Sibiu</span>
+                        <span class="badge-soft neutral"><?= (int)$loc['capacitate'] ?> locuri</span>
                     </div>
-                </article>
-            </div>
+                    <h2 class="h4 mb-2"><?= e($loc['nume_locatie']) ?></h2>
+                    <p class="text-secondary-emphasis mb-3"><?= e($loc['adresa']) ?></p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="<?= e(url('locatie.php?id=' . (int)$loc['id_locatie'])) ?>" class="btn btn-crimson rounded-pill">Disponibilitate</a>
+                        <a href="<?= e(url('rezervare.php?locatie=' . (int)$loc['id_locatie'])) ?>" class="btn btn-soft rounded-pill">Rezerva direct</a>
+                    </div>
+                </div>
+            </article>
         <?php endforeach; ?>
     </div>
 <?php else: ?>
-    <div class="empty-state">Nu există locații înregistrate în acest moment.</div>
+    <div class="glass-panel empty-state">Nu exista locatii salvate momentan.</div>
 <?php endif; ?>
-
 <?php render_footer(); ?>

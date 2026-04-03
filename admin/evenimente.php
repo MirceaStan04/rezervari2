@@ -1,56 +1,48 @@
 <?php
-require_once __DIR__ . '/../includes/config.php';
-require '../includes/layout.php';
-require 'admin_check.php';
+require_once __DIR__ . '/admin_check.php';
+require __DIR__ . '/../includes/layout.php';
 
-$evenimente = $pdo->query("
-    SELECT e.id_eveniment, e.titlu, e.data_eveniment, e.ora_inceput, e.ora_sfarsit, e.pret, l.nume_locatie
-    FROM evenimente e
-    JOIN locatii l ON e.id_locatie = l.id_locatie
-    ORDER BY e.data_eveniment DESC, e.ora_inceput DESC
-")->fetchAll();
+$evenimente = $pdo->query("SELECT e.id_eveniment, e.titlu, e.descriere, e.data_eveniment, e.ora_inceput, e.ora_sfarsit, e.pret,
+                                  l.id_locatie, l.nume_locatie, l.poza,
+                                  COALESCE(u.nume, 'Utilizator nedefinit') AS nume_utilizator
+                           FROM evenimente e
+                           JOIN locatii l ON e.id_locatie = l.id_locatie
+                           LEFT JOIN rezervari r ON r.id_eveniment = e.id_eveniment
+                           LEFT JOIN utilizatori u ON u.id_utilizator = r.id_utilizator
+                           ORDER BY e.data_eveniment DESC, e.ora_inceput DESC")->fetchAll();
 
-render_header('Gestionare Evenimente');
+render_header('Admin - evenimente');
 ?>
-
 <section class="mb-4">
-    <div class="section-card p-4 p-lg-5">
-        <h1 class="section-title mb-2">Gestionare evenimente</h1>
-        <p class="section-subtitle mb-0">Tabel centralizat cu evenimentele existente și locațiile asociate.</p>
-    </div>
+    <span class="card-tag mb-3"><i class="bi bi-calendar4-event"></i> management evenimente</span>
+    <h1 class="section-title mb-2">Agenda completa</h1>
+    <p class="section-subtitle">Pagina foloseste schema reala: evenimente + locatii + rezervari + utilizatori.</p>
 </section>
 
 <?php if ($evenimente): ?>
-    <div class="table-shell">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Eveniment</th>
-                        <th>Data</th>
-                        <th>Interval</th>
-                        <th>Locație</th>
-                        <th>Preț</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($evenimente as $ev): ?>
-                        <tr>
-                            <td><?= (int)$ev['id_eveniment'] ?></td>
-                            <td class="fw-semibold"><?= htmlspecialchars($ev['titlu']) ?></td>
-                            <td><?= htmlspecialchars($ev['data_eveniment']) ?></td>
-                            <td><?= htmlspecialchars($ev['ora_inceput']) ?> - <?= htmlspecialchars($ev['ora_sfarsit']) ?></td>
-                            <td><?= htmlspecialchars($ev['nume_locatie']) ?></td>
-                            <td><?= htmlspecialchars($ev['pret']) ?> lei</td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+    <div class="event-grid">
+        <?php foreach ($evenimente as $event): ?>
+            <article class="card-surface event-card">
+                <img class="event-card__image" src="<?= e(loc_image($event['poza'] ?? '')) ?>" alt="<?= e($event['titlu']) ?>">
+                <div class="event-card__body">
+                    <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-2">
+                        <span class="card-tag">ID eveniment #<?= (int)$event['id_eveniment'] ?></span>
+                        <span class="badge-soft neutral"><?= e(format_money($event['pret'] ?? 0)) ?></span>
+                    </div>
+                    <h2 class="h4 mb-2"><?= e($event['titlu']) ?></h2>
+                    <div class="event-meta mb-3">
+                        <span><i class="bi bi-calendar2-week"></i> <?= e(format_date_ro($event['data_eveniment'])) ?></span>
+                        <span><i class="bi bi-clock"></i> <?= e(substr($event['ora_inceput'], 0, 5)) ?> - <?= e(substr($event['ora_sfarsit'], 0, 5)) ?></span>
+                        <span><i class="bi bi-building"></i> <?= e($event['nume_locatie']) ?></span>
+                    </div>
+                    <p class="text-secondary-emphasis mb-3"><?= e(short_text((string)($event['descriere'] ?? 'Fara descriere.'), 140)) ?></p>
+                    <div class="small text-secondary-emphasis mb-3">Ultimul utilizator legat prin rezervare: <?= e($event['nume_utilizator']) ?></div>
+                    <a href="<?= e(url('locatie.php?id=' . (int)$event['id_locatie'])) ?>" class="btn btn-soft rounded-pill">Vezi locatia</a>
+                </div>
+            </article>
+        <?php endforeach; ?>
     </div>
 <?php else: ?>
-    <div class="empty-state">Nu există evenimente înregistrate.</div>
+    <div class="glass-panel empty-state">Nu exista evenimente in sistem.</div>
 <?php endif; ?>
-
 <?php render_footer(); ?>
