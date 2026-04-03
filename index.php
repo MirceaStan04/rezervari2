@@ -5,70 +5,82 @@ require __DIR__ . '/includes/layout.php';
 $stats = [
     'locatii' => card_stat($pdo, 'locatii'),
     'evenimente' => card_stat($pdo, 'evenimente'),
-    'rezervari' => card_stat($pdo, 'rezervari'),
+    'inscrieri' => card_stat($pdo, 'rezervari'),
+    'cereri' => pending_event_requests_count($pdo),
 ];
 
 $locatii = $pdo->query('SELECT id_locatie, nume_locatie, adresa, capacitate, poza FROM locatii ORDER BY id_locatie DESC LIMIT 3')->fetchAll();
 $evenimente = $pdo->query("SELECT e.id_eveniment, e.titlu, e.descriere, e.data_eveniment, e.ora_inceput, e.ora_sfarsit, e.pret, l.id_locatie, l.nume_locatie, l.adresa, l.poza
                           FROM evenimente e
                           JOIN locatii l ON e.id_locatie = l.id_locatie
+                          WHERE e.data_eveniment >= CURRENT_DATE
                           ORDER BY e.data_eveniment ASC, e.ora_inceput ASC
                           LIMIT 4")->fetchAll();
 
-render_header('Crimson Reserve - rezervari evenimente');
+render_header('Crimson Reserve - evenimente si inscrieri');
 ?>
 <section class="hero-grid mb-5">
     <div class="glass-panel hero-copy">
-        <span class="hero-kicker"><i class="bi bi-stars"></i> varianta premium pentru proiectul tau</span>
-        <h1 class="hero-title">Rezervari de evenimente care arata ca un produs real, nu ca un simplu laborator.</h1>
+        <span class="hero-kicker"><i class="bi bi-stars"></i> platforma cu 3 roluri clare</span>
+        <h1 class="hero-title">Clientii se inscriu la evenimente. Organizatorii doar propun evenimente. Adminul publica ce merita sa intre live.</h1>
         <p class="hero-subtitle">
-            Cauta locatii, verifica rapid disponibilitatea, trimite cereri de rezervare si administreaza totul dintr-un dashboard coerent, pe schema ta PostgreSQL.
+            Acum proiectul are flux comercial real: clientii se inscriu la evenimente existente, organizatorii au flux separat de propunere, iar adminul aproba ce intra live.
         </p>
         <div class="d-flex flex-wrap gap-3 mt-4">
-            <a href="<?= e(url('locatii.php')) ?>" class="btn btn-crimson btn-lg rounded-pill px-4">Exploreaza locatiile</a>
-            <a href="<?= e(url('evenimente.php')) ?>" class="btn btn-soft btn-lg rounded-pill px-4">Vezi evenimentele</a>
+            <a href="<?= e(url('evenimente.php')) ?>" class="btn btn-crimson btn-lg rounded-pill px-4">Vezi evenimentele</a>
+            <?php if (is_organizer()): ?>
+                <a href="<?= e(url('propune_eveniment.php')) ?>" class="btn btn-soft btn-lg rounded-pill px-4">Propune eveniment</a>
+            <?php elseif (!is_logged_in()): ?>
+                <a href="<?= e(url('register.php')) ?>" class="btn btn-soft btn-lg rounded-pill px-4">Creeaza cont</a>
+            <?php endif; ?>
         </div>
         <div class="metric-row">
             <div class="metric-tile">
                 <strong><?= (int)$stats['locatii'] ?></strong>
-                <span>locatii in sistem</span>
+                <span>locatii disponibile</span>
             </div>
             <div class="metric-tile">
                 <strong><?= (int)$stats['evenimente'] ?></strong>
-                <span>evenimente create</span>
+                <span>evenimente publicate</span>
             </div>
             <div class="metric-tile">
-                <strong><?= (int)$stats['rezervari'] ?></strong>
-                <span>rezervari inregistrate</span>
+                <strong><?= (int)$stats['inscrieri'] ?></strong>
+                <span>inscrieri totale</span>
             </div>
         </div>
+        <?php if (event_requests_ready($pdo)): ?>
+            <div class="notice-box mt-4">
+                <strong>Cereri organizatori in asteptare</strong>
+                <div class="text-secondary-emphasis small mt-2"><?= (int)$stats['cereri'] ?> cereri asteapta aprobarea unui admin.</div>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div class="glass-panel hero-side">
         <div class="highlight-card">
             <div class="d-flex align-items-start gap-3">
-                <i class="bi bi-calendar-check"></i>
+                <i class="bi bi-ticket-detailed"></i>
                 <div>
-                    <strong>Flux clar de rezervare</strong>
-                    <div class="text-secondary-emphasis">Alegi data, intervalul orar si trimiti direct cererea pentru locatie.</div>
+                    <strong>Flux client</strong>
+                    <div class="text-secondary-emphasis">Clientul intra pe eveniment, cere 1 sau mai multe locuri si vede statusul in contul lui.</div>
                 </div>
             </div>
         </div>
         <div class="highlight-card">
             <div class="d-flex align-items-start gap-3">
-                <i class="bi bi-building"></i>
+                <i class="bi bi-send-check"></i>
                 <div>
-                    <strong>Catalog vizual de locatii</strong>
-                    <div class="text-secondary-emphasis">Carduri, poze, adresa, capacitate si disponibilitate pe urmatoarele zile.</div>
+                    <strong>Flux organizator</strong>
+                    <div class="text-secondary-emphasis">Organizatorul trimite o cerere de eveniment cu locatie, interval si pret propus.</div>
                 </div>
             </div>
         </div>
         <div class="highlight-card">
             <div class="d-flex align-items-start gap-3">
-                <i class="bi bi-speedometer2"></i>
+                <i class="bi bi-shield-check"></i>
                 <div>
-                    <strong>Admin dashboard modern</strong>
-                    <div class="text-secondary-emphasis">KPI-uri, rezervari recente, distribuire pe status si pagini mai aerisite.</div>
+                    <strong>Flux admin</strong>
+                    <div class="text-secondary-emphasis">Adminul aproba cererea si o transforma in eveniment public vizibil tuturor clientilor.</div>
                 </div>
             </div>
         </div>
@@ -78,87 +90,85 @@ render_header('Crimson Reserve - rezervari evenimente');
 <section class="mb-5">
     <div class="panel-header">
         <div>
-            <h2 class="section-title mb-1">Locatii recomandate</h2>
-            <p class="section-subtitle mb-0">Primele locatii din baza ta de date, afisate intr-un mod mult mai vandabil.</p>
+            <h2 class="section-title mb-1">Evenimente pe care le poti vinde</h2>
+            <p class="section-subtitle mb-0">Carduri publice, call to action clar si traseu de inscriere separat de propunerea de eveniment.</p>
         </div>
-        <a href="<?= e(url('locatii.php')) ?>" class="btn btn-soft rounded-pill">Vezi toate</a>
+        <a href="<?= e(url('evenimente.php')) ?>" class="btn btn-soft rounded-pill">Vezi toate</a>
     </div>
 
-    <?php if ($locatii): ?>
-        <div class="location-grid">
-            <?php foreach ($locatii as $loc): ?>
-                <article class="card-surface location-card">
-                    <img class="location-card__image" src="<?= e(loc_image($loc['poza'] ?? '')) ?>" alt="<?= e($loc['nume_locatie']) ?>">
-                    <div class="location-card__body">
-                        <span class="card-tag"><i class="bi bi-geo-alt"></i> locatie premium</span>
-                        <h3 class="h4 mt-3 mb-2"><?= e($loc['nume_locatie']) ?></h3>
-                        <div class="location-meta mb-3">
-                            <span><i class="bi bi-pin-map"></i> <?= e($loc['adresa']) ?></span>
-                            <span><i class="bi bi-people"></i> <?= (int)$loc['capacitate'] ?> persoane</span>
+    <?php if ($evenimente): ?>
+        <div class="event-grid">
+            <?php foreach ($evenimente as $ev): ?>
+                <article class="card-surface event-card">
+                    <img class="event-card__image" src="<?= e(loc_image($ev['poza'] ?? '')) ?>" alt="<?= e($ev['titlu']) ?>">
+                    <div class="event-card__body">
+                        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-2">
+                            <span class="card-tag"><i class="bi bi-calendar-event"></i> <?= e(format_date_ro($ev['data_eveniment'])) ?></span>
+                            <span class="badge-soft neutral"><?= e(format_money($ev['pret'] ?? 0)) ?></span>
                         </div>
-                        <a class="btn btn-crimson rounded-pill" href="<?= e(url('locatie.php?id=' . (int)$loc['id_locatie'])) ?>">Vezi detalii</a>
+                        <h3 class="h4 mb-2"><?= e($ev['titlu']) ?></h3>
+                        <div class="inline-meta mb-2">
+                            <span><i class="bi bi-clock"></i> <?= e(substr($ev['ora_inceput'], 0, 5)) ?> - <?= e(substr($ev['ora_sfarsit'], 0, 5)) ?></span>
+                            <span><i class="bi bi-building"></i> <?= e($ev['nume_locatie']) ?></span>
+                        </div>
+                        <div class="text-secondary-emphasis small mb-3"><?= e(short_text((string)($ev['descriere'] ?? 'Eveniment disponibil pentru inscriere.'), 110)) ?></div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <?php if (is_client()): ?>
+                                <a href="<?= e(url('rezervare.php?eveniment=' . (int)$ev['id_eveniment'])) ?>" class="btn btn-crimson rounded-pill">Inscrie-te</a>
+                            <?php elseif (!is_logged_in()): ?>
+                                <a href="<?= e(url('login.php')) ?>" class="btn btn-crimson rounded-pill">Intra ca sa te inscrii</a>
+                            <?php elseif (is_organizer()): ?>
+                                <a href="<?= e(url('propune_eveniment.php')) ?>" class="btn btn-soft rounded-pill">Propune eveniment</a>
+                            <?php endif; ?>
+                            <a href="<?= e(url('locatie.php?id=' . (int)$ev['id_locatie'])) ?>" class="btn btn-soft rounded-pill">Vezi locatia</a>
+                        </div>
                     </div>
                 </article>
             <?php endforeach; ?>
         </div>
     <?php else: ?>
-        <div class="glass-panel empty-state">
-            Nu exista locatii in baza de date. Adauga in PostgreSQL si ele vor aparea automat aici.
-        </div>
+        <div class="glass-panel empty-state">Nu exista inca evenimente aprobate in sistem.</div>
     <?php endif; ?>
 </section>
 
 <section class="split-panel mb-5">
     <div class="glass-panel p-4 p-lg-5">
-        <span class="card-tag mb-3"><i class="bi bi-layers"></i> de ce arata mai bine</span>
-        <h2 class="section-title mb-3">Am scos proiectul din zona de tabele seci si l-am dus spre un flow comercial.</h2>
+        <span class="card-tag mb-3"><i class="bi bi-diagram-3"></i> flux nou</span>
+        <h2 class="section-title mb-3">Model de lucru mai curat decat varianta initiala.</h2>
         <div class="timeline">
             <div class="timeline-item">
-                <div class="timeline-item__dot"><i class="bi bi-search"></i></div>
-                <div class="timeline-item__body"><strong>1. Descoperire rapida</strong><div class="text-secondary-emphasis">Utilizatorul vede imediat locatiile si evenimentele relevante.</div></div>
+                <div class="timeline-item__dot"><i class="bi bi-person-badge"></i></div>
+                <div class="timeline-item__body"><strong>1. Organizatorul trimite cererea</strong><div class="text-secondary-emphasis">Evenimentul nu apare public pana nu este aprobat.</div></div>
             </div>
             <div class="timeline-item">
-                <div class="timeline-item__dot"><i class="bi bi-calendar-week"></i></div>
-                <div class="timeline-item__body"><strong>2. Verificare disponibilitate</strong><div class="text-secondary-emphasis">Calendarul pe locatie arata dintr-o privire zilele ocupate si zilele libere.</div></div>
+                <div class="timeline-item__dot"><i class="bi bi-check2-square"></i></div>
+                <div class="timeline-item__body"><strong>2. Adminul valideaza</strong><div class="text-secondary-emphasis">La aprobare se creeaza automat evenimentul public in tabelul evenimente.</div></div>
             </div>
             <div class="timeline-item">
-                <div class="timeline-item__dot"><i class="bi bi-send-check"></i></div>
-                <div class="timeline-item__body"><strong>3. Cerere trimisa elegant</strong><div class="text-secondary-emphasis">Formularul de rezervare este separat, clar si pregatit pentru extindere.</div></div>
+                <div class="timeline-item__dot"><i class="bi bi-people"></i></div>
+                <div class="timeline-item__body"><strong>3. Clientii se inscriu</strong><div class="text-secondary-emphasis">Inscrierile raman separate in rezervari si pot fi gestionate din admin.</div></div>
             </div>
         </div>
     </div>
 
     <div class="glass-panel p-4 p-lg-5">
-        <div class="panel-header mb-4">
-            <div>
-                <h2 class="section-title mb-1">Evenimente apropiate</h2>
-                <p class="section-subtitle mb-0">Listare vizuala, nu tabela rece.</p>
-            </div>
-        </div>
-        <?php if ($evenimente): ?>
+        <span class="card-tag mb-3"><i class="bi bi-buildings"></i> locatii recomandate</span>
+        <?php if ($locatii): ?>
             <div class="d-grid gap-3">
-                <?php foreach ($evenimente as $ev): ?>
-                    <article class="highlight-card">
-                        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                <?php foreach ($locatii as $loc): ?>
+                    <div class="highlight-card">
+                        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
                             <div>
-                                <span class="card-tag mb-2"><i class="bi bi-calendar-event"></i> <?= e(format_date_ro($ev['data_eveniment'])) ?></span>
-                                <h3 class="h5 mb-2"><?= e($ev['titlu']) ?></h3>
-                                <div class="inline-meta mb-2">
-                                    <span><i class="bi bi-clock"></i> <?= e(substr($ev['ora_inceput'], 0, 5)) ?> - <?= e(substr($ev['ora_sfarsit'], 0, 5)) ?></span>
-                                    <span><i class="bi bi-building"></i> <?= e($ev['nume_locatie']) ?></span>
-                                </div>
-                                <div class="text-secondary-emphasis small"><?= e(short_text((string)($ev['descriere'] ?? 'Eveniment disponibil pentru rezervare.'), 110)) ?></div>
+                                <strong><?= e($loc['nume_locatie']) ?></strong>
+                                <div class="text-secondary-emphasis small mt-2"><?= e($loc['adresa']) ?> • <?= (int)$loc['capacitate'] ?> persoane</div>
                             </div>
-                            <div class="text-end">
-                                <div class="badge-soft neutral mb-2"><?= e(format_money($ev['pret'] ?? 0)) ?></div>
-                                <a href="<?= e(url('locatie.php?id=' . (int)$ev['id_locatie'])) ?>" class="btn btn-soft btn-sm rounded-pill">Detalii locatie</a>
-                            </div>
+                            <a class="btn btn-soft rounded-pill" href="<?= e(url('propune_eveniment.php?locatie=' . (int)$loc['id_locatie'])) ?>">Propune aici</a>
                         </div>
-                    </article>
+                    </div>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <div class="empty-state">Nu exista inca evenimente salvate in baza.</div>
+            <div class="empty-state">Nu exista locatii in baza de date.</div>
         <?php endif; ?>
     </div>
 </section>

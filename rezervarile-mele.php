@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
-require_login();
+require_client();
 
 $stmt = $pdo->prepare("SELECT r.id_rezervare, r.numar_locuri, r.data_rezervare, r.status,
-                              e.titlu, e.descriere, e.data_eveniment, e.ora_inceput, e.ora_sfarsit, e.pret,
+                              e.id_eveniment, e.titlu, e.descriere, e.data_eveniment, e.ora_inceput, e.ora_sfarsit, e.pret,
                               l.nume_locatie, l.adresa
                        FROM rezervari r
                        JOIN evenimente e ON r.id_eveniment = e.id_eveniment
@@ -14,12 +14,12 @@ $stmt = $pdo->prepare("SELECT r.id_rezervare, r.numar_locuri, r.data_rezervare, 
 $stmt->execute([(int)$_SESSION['user_id']]);
 $rezervari = $stmt->fetchAll();
 
-render_header('Rezervarile mele - Crimson Reserve');
+render_header('Inscrierile mele - Crimson Reserve');
 ?>
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-ticket-detailed"></i> contul meu</span>
-    <h1 class="section-title mb-2">Rezervarile mele</h1>
-    <p class="section-subtitle">O pagina lipsa din proiectul initial si foarte utila intr-o varianta vandabila.</p>
+    <h1 class="section-title mb-2">Inscrierile mele</h1>
+    <p class="section-subtitle">Aici vezi evenimentele la care te-ai inscris ca participant, din rolul de client.</p>
 </section>
 
 <?php if ($rezervari): ?>
@@ -43,7 +43,10 @@ render_header('Rezervarile mele - Crimson Reserve');
                     <p class="text-secondary-emphasis mb-3"><?= e(short_text((string)($rez['descriere'] ?? 'Fara descriere.'), 150)) ?></p>
                     <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
                         <div class="small text-secondary-emphasis">Cerere inregistrata la: <?= e(format_date_ro($rez['data_rezervare'])) ?></div>
-                        <div class="badge-soft neutral"><?= e(format_money($rez['pret'] ?? 0)) ?></div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <div class="badge-soft neutral"><?= e(format_money($rez['pret'] ?? 0)) ?></div>
+                            <a href="<?= e(url('rezervare.php?eveniment=' . (int)$rez['id_eveniment'])) ?>" class="btn btn-soft btn-sm rounded-pill">Detalii</a>
+                        </div>
                     </div>
                 </div>
             </article>
@@ -51,7 +54,7 @@ render_header('Rezervarile mele - Crimson Reserve');
     </div>
 <?php else: ?>
     <div class="glass-panel empty-state">
-        Nu ai inca rezervari. <a href="<?= e(url('locatii.php')) ?>">Alege o locatie</a> si trimite prima cerere.
+        Nu ai inca inscrieri. <a href="<?= e(url('evenimente.php')) ?>">Alege un eveniment</a> si trimite prima rezervare.
     </div>
 <?php endif; ?>
 <?php render_footer(); ?>

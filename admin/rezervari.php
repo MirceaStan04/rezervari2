@@ -23,12 +23,12 @@ foreach ($rezervari as $rez) {
     $coloane[$key][] = $rez;
 }
 
-render_header('Admin - rezervari');
+render_header('Admin - inscrieri');
 ?>
 <section class="mb-4">
-    <span class="card-tag mb-3"><i class="bi bi-clipboard-check"></i> management rezervari</span>
-    <h1 class="section-title mb-2">Cereri de rezervare</h1>
-    <p class="section-subtitle">Am mutat pagina intr-un format de tip kanban, mult mai clar decat un tabel lung.</p>
+    <span class="card-tag mb-3"><i class="bi bi-clipboard-check"></i> management inscrieri</span>
+    <h1 class="section-title mb-2">Inscrieri la evenimente</h1>
+    <p class="section-subtitle">Clientii rezerva locuri la evenimente deja publicate. Adminul aproba sau respinge inscrierile exact ca intr-un flux real.</p>
 </section>
 
 <div class="kanban-grid">
@@ -37,7 +37,7 @@ render_header('Admin - rezervari');
             <div class="panel-header mb-3">
                 <div>
                     <h2 class="h5 mb-1"><?= e($title) ?></h2>
-                    <div class="text-secondary-emphasis small"><?= count($coloane[$key] ?? []) ?> cereri</div>
+                    <div class="text-secondary-emphasis small"><?= count($coloane[$key] ?? []) ?> inscrieri</div>
                 </div>
             </div>
             <?php if (!empty($coloane[$key])): ?>

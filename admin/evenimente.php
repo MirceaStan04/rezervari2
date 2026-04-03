@@ -4,11 +4,9 @@ require __DIR__ . '/../includes/layout.php';
 
 $evenimente = $pdo->query("SELECT e.id_eveniment, e.titlu, e.descriere, e.data_eveniment, e.ora_inceput, e.ora_sfarsit, e.pret,
                                   l.id_locatie, l.nume_locatie, l.poza,
-                                  COALESCE(u.nume, 'Utilizator nedefinit') AS nume_utilizator
+                                  (SELECT COUNT(*) FROM rezervari r WHERE r.id_eveniment = e.id_eveniment) AS inscrieri_totale
                            FROM evenimente e
                            JOIN locatii l ON e.id_locatie = l.id_locatie
-                           LEFT JOIN rezervari r ON r.id_eveniment = e.id_eveniment
-                           LEFT JOIN utilizatori u ON u.id_utilizator = r.id_utilizator
                            ORDER BY e.data_eveniment DESC, e.ora_inceput DESC")->fetchAll();
 
 render_header('Admin - evenimente');
@@ -16,7 +14,7 @@ render_header('Admin - evenimente');
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-calendar4-event"></i> management evenimente</span>
     <h1 class="section-title mb-2">Agenda completa</h1>
-    <p class="section-subtitle">Pagina foloseste schema reala: evenimente + locatii + rezervari + utilizatori.</p>
+    <p class="section-subtitle">Aici vezi doar evenimentele publicate. Propunerile noi stau separat in pagina de cereri.</p>
 </section>
 
 <?php if ($evenimente): ?>
@@ -36,8 +34,8 @@ render_header('Admin - evenimente');
                         <span><i class="bi bi-building"></i> <?= e($event['nume_locatie']) ?></span>
                     </div>
                     <p class="text-secondary-emphasis mb-3"><?= e(short_text((string)($event['descriere'] ?? 'Fara descriere.'), 140)) ?></p>
-                    <div class="small text-secondary-emphasis mb-3">Ultimul utilizator legat prin rezervare: <?= e($event['nume_utilizator']) ?></div>
-                    <a href="<?= e(url('locatie.php?id=' . (int)$event['id_locatie'])) ?>" class="btn btn-soft rounded-pill">Vezi locatia</a>
+                    <div class="small text-secondary-emphasis mb-3">Inscrieri totale: <?= (int)$event['inscrieri_totale'] ?></div>
+                    <a href="<?= e(url('rezervare.php?eveniment=' . (int)$event['id_eveniment'])) ?>" class="btn btn-soft rounded-pill">Deschide ca utilizator</a>
                 </div>
             </article>
         <?php endforeach; ?>

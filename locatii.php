@@ -26,7 +26,7 @@ render_header('Locatii - Crimson Reserve');
                     <p class="text-secondary-emphasis mb-3"><?= e($loc['adresa']) ?></p>
                     <div class="d-flex flex-wrap gap-2">
                         <a href="<?= e(url('locatie.php?id=' . (int)$loc['id_locatie'])) ?>" class="btn btn-crimson rounded-pill">Disponibilitate</a>
-                        <a href="<?= e(url('rezervare.php?locatie=' . (int)$loc['id_locatie'])) ?>" class="btn btn-soft rounded-pill">Rezerva direct</a>
+                        <a href="<?= e(url('propune_eveniment.php?locatie=' . (int)$loc['id_locatie'])) ?>" class="btn btn-soft rounded-pill">Propune eveniment</a>
                     </div>
                 </div>
             </article>

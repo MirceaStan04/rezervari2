@@ -82,14 +82,48 @@ function get_flash(): ?array
     return $flash;
 }
 
+function normalize_role(?string $role): string
+{
+    $role = strtolower(trim((string)$role));
+    return match ($role) {
+        'admin', 'administrator' => 'admin',
+        'organizator', 'organizer' => 'organizator',
+        default => 'client',
+    };
+}
+
+function role_label(?string $role): string
+{
+    return match (normalize_role($role)) {
+        'admin' => 'Admin',
+        'organizator' => 'Organizator',
+        default => 'Client',
+    };
+}
+
 function is_logged_in(): bool
 {
     return isset($_SESSION['user_id']);
 }
 
+function current_role(): string
+{
+    return normalize_role($_SESSION['rol'] ?? 'client');
+}
+
 function is_admin(): bool
 {
-    return is_logged_in() && (($_SESSION['rol'] ?? '') === 'admin');
+    return is_logged_in() && current_role() === 'admin';
+}
+
+function is_organizer(): bool
+{
+    return is_logged_in() && current_role() === 'organizator';
+}
+
+function is_client(): bool
+{
+    return is_logged_in() && current_role() === 'client';
 }
 
 function require_login(): void
@@ -97,6 +131,26 @@ function require_login(): void
     if (!is_logged_in()) {
         set_flash('warning', 'Trebuie sa fii autentificat pentru a continua.');
         header('Location: ' . url('login.php'));
+        exit;
+    }
+}
+
+function require_client(): void
+{
+    require_login();
+    if (!is_client()) {
+        set_flash('danger', 'Doar clientii se pot inscrie la evenimente. Organizatorii trimit cereri de eveniment din zona dedicata.');
+        header('Location: ' . url('index.php'));
+        exit;
+    }
+}
+
+function require_organizer(): void
+{
+    require_login();
+    if (!is_organizer()) {
+        set_flash('danger', 'Aceasta zona este disponibila doar organizatorilor.');
+        header('Location: ' . url('index.php'));
         exit;
     }
 }
@@ -133,7 +187,6 @@ function format_money($value): string
 {
     return number_format((float)$value, 2, ',', '.') . ' lei';
 }
-
 
 function short_text(?string $text, int $limit = 120): string
 {
@@ -192,15 +245,61 @@ function status_badge_class(?string $status): string
     };
 }
 
-function card_stat(PDO $pdo, string $table): int
+function table_exists(PDO $pdo, string $table): bool
 {
-    return (int)$pdo->query("SELECT COUNT(*) FROM {$table}")->fetchColumn();
+    $stmt = $pdo->prepare("SELECT to_regclass(?)");
+    $stmt->execute(['public.' . $table]);
+    return (bool)$stmt->fetchColumn();
 }
 
-function insert_user_compatible(PDO $pdo, string $nume, string $email, string $hash): void
+function card_stat(PDO $pdo, string $table): int
+{
+    return table_exists($pdo, $table) ? (int)$pdo->query("SELECT COUNT(*) FROM {$table}")->fetchColumn() : 0;
+}
+
+function event_requests_ready(PDO $pdo): bool
+{
+    return table_exists($pdo, 'cereri_evenimente');
+}
+
+function pending_event_requests_count(PDO $pdo): int
+{
+    if (!event_requests_ready($pdo)) {
+        return 0;
+    }
+
+    $stmt = $pdo->query("SELECT COUNT(*) FROM cereri_evenimente WHERE status IN ('in_asteptare','asteptare','pending','noua')");
+    return (int)$stmt->fetchColumn();
+}
+
+function safe_event_request_stats(PDO $pdo): array
+{
+    $base = ['total' => 0, 'in_asteptare' => 0, 'aprobata' => 0, 'respinsa' => 0];
+    if (!event_requests_ready($pdo)) {
+        return $base;
+    }
+
+    $rows = $pdo->query('SELECT status, COUNT(*) AS total FROM cereri_evenimente GROUP BY status')->fetchAll();
+    foreach ($rows as $row) {
+        $key = normalize_status($row['status'] ?? '');
+        $base['total'] += (int)$row['total'];
+        if (isset($base[$key])) {
+            $base[$key] += (int)$row['total'];
+        }
+    }
+    return $base;
+}
+
+function insert_user_compatible(PDO $pdo, string $nume, string $email, string $hash, string $requestedRole = 'client'): void
 {
     $last = null;
-    $roleCandidates = ['user', 'utilizator', 'client'];
+    $requestedRole = normalize_role($requestedRole);
+
+    $roleCandidates = match ($requestedRole) {
+        'admin' => ['admin'],
+        'organizator' => ['organizator', 'organizer'],
+        default => ['client', 'user', 'utilizator'],
+    };
 
     $roleQueries = [
         'INSERT INTO utilizatori (nume, email, parola, rol, data_creare) VALUES (?, ?, ?, ?, CURRENT_DATE)',
@@ -220,25 +319,35 @@ function insert_user_compatible(PDO $pdo, string $nume, string $email, string $h
         }
     }
 
-    $simpleQueries = [
-        'INSERT INTO utilizatori (nume, email, parola, data_creare) VALUES (?, ?, ?, CURRENT_DATE)',
-        'INSERT INTO utilizatori (nume, email, parola, data_creare) VALUES (?, ?, ?, NOW())',
-        'INSERT INTO utilizatori (nume, email, parola) VALUES (?, ?, ?)',
-    ];
+    if ($requestedRole === 'client') {
+        $simpleQueries = [
+            'INSERT INTO utilizatori (nume, email, parola, data_creare) VALUES (?, ?, ?, CURRENT_DATE)',
+            'INSERT INTO utilizatori (nume, email, parola, data_creare) VALUES (?, ?, ?, NOW())',
+            'INSERT INTO utilizatori (nume, email, parola) VALUES (?, ?, ?)',
+        ];
 
-    foreach ($simpleQueries as $sql) {
-        try {
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$nume, $email, $hash]);
-            return;
-        } catch (PDOException $e) {
-            $last = $e;
+        foreach ($simpleQueries as $sql) {
+            try {
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$nume, $email, $hash]);
+                return;
+            } catch (PDOException $e) {
+                $last = $e;
+            }
         }
     }
 
     if ($last) {
         throw $last;
     }
+}
+
+
+function fetch_last_insert_id_pg(PDO $pdo, string $table, string $column): int
+{
+    $stmt = $pdo->prepare('SELECT currval(pg_get_serial_sequence(?, ?))');
+    $stmt->execute([$table, $column]);
+    return (int)$stmt->fetchColumn();
 }
 
 function insert_rezervare_compatible(PDO $pdo, int $idUtilizator, int $idEveniment, int $numarLocuri): void

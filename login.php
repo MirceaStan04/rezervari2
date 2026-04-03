@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $_SESSION['user_id'] = $user['id_utilizator'];
     $_SESSION['nume'] = $user['nume'];
-    $_SESSION['rol'] = $user['rol'] ?? 'user';
+    $_SESSION['rol'] = normalize_role($user['rol'] ?? 'client');
 
     set_flash('success', 'Autentificare reusita.');
     $target = $_SESSION['last_page'] ?? url('index.php');
@@ -48,7 +48,7 @@ render_header('Login - Crimson Reserve');
     <div class="text-center mb-4">
         <span class="card-tag mb-3"><i class="bi bi-box-arrow-in-right"></i> acces in platforma</span>
         <h1 class="section-title mb-2">Bine ai revenit</h1>
-        <p class="section-subtitle mb-0 mx-auto">Autentifica-te pentru a trimite cereri, a vedea rezervarile tale si a intra in dashboard.</p>
+        <p class="section-subtitle mb-0 mx-auto">Clientii se inscriu la evenimente, organizatorii trimit doar propuneri, iar adminul aproba.</p>
     </div>
 
     <form method="post" class="row g-3" autocomplete="off">
