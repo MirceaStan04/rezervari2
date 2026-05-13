@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 if (!event_requests_ready($pdo)) {
-    set_flash('danger', 'Lipseste tabela cereri_evenimente. Ruleaza scriptul SQL din folderul database.');
+    set_flash('danger', 'Functionalitate temporar indisponibila. Contacteaza administratorul.');
     header('Location: ' . url('propune_eveniment.php'));
     exit;
 }
@@ -25,6 +25,12 @@ $idOrganizator = (int)$_SESSION['user_id'];
 
 if ($idLocatie <= 0 || $titlu === '' || $dataEveniment === '' || $oraInceput === '' || $oraSfarsit === '') {
     set_flash('warning', 'Completeaza toate campurile obligatorii.');
+    header('Location: ' . url('propune_eveniment.php?locatie=' . $idLocatie . '&data=' . urlencode($dataEveniment)));
+    exit;
+}
+
+if ($dataEveniment <= date('Y-m-d')) {
+    set_flash('warning', 'Data evenimentului trebuie sa fie in viitor.');
     header('Location: ' . url('propune_eveniment.php?locatie=' . $idLocatie . '&data=' . urlencode($dataEveniment)));
     exit;
 }
@@ -54,7 +60,7 @@ try {
     header('Location: ' . url('cererile-mele.php'));
     exit;
 } catch (Throwable $e) {
-    set_flash('danger', 'Nu am putut salva cererea. Verifica daca ai rulat scriptul SQL pentru noua tabela.');
+    set_flash('danger', 'A aparut o eroare. Te rugam sa incerci din nou.');
     header('Location: ' . url('propune_eveniment.php?locatie=' . $idLocatie . '&data=' . urlencode($dataEveniment)));
     exit;
 }

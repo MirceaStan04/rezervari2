@@ -25,8 +25,8 @@ render_header('Propune eveniment - EventFlow');
 
         <?php if (!$hasRequestsTable): ?>
             <div class="notice-box warning-box mb-4">
-                <strong>Lipseste tabela pentru cereri</strong>
-                <div class="text-secondary-emphasis small mt-2">Ruleaza fisierul <code>database/upgrade_roles_evenimente.sql</code> in pgAdmin sau Query Tool inainte sa folosesti acest flux.</div>
+                <strong>Functionalitate temporar indisponibila</strong>
+                <div class="text-secondary-emphasis small mt-2">Nu poti trimite cereri momentan. Contacteaza administratorul platformei.</div>
             </div>
         <?php endif; ?>
 
@@ -52,7 +52,9 @@ render_header('Propune eveniment - EventFlow');
             </div>
             <div class="col-md-4">
                 <label class="form-label">Data</label>
-                <input type="date" name="data_eveniment" class="form-control" required value="<?= e($dataPreset) ?>">
+                <input type="date" name="data_eveniment" class="form-control" required
+                       min="<?= date('Y-m-d', strtotime('+1 day')) ?>"
+                       value="<?= e($dataPreset) ?>">
             </div>
             <div class="col-md-4">
                 <label class="form-label">Ora inceput</label>
@@ -96,11 +98,11 @@ render_header('Propune eveniment - EventFlow');
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-item__dot"><i class="bi bi-2-circle"></i></div>
-                    <div class="timeline-item__body"><strong>Adminul o valideaza</strong><div class="text-secondary-emphasis">La aprobare se creeaza un rand in tabelul evenimente.</div></div>
+                    <div class="timeline-item__body"><strong>Adminul o valideaza</strong><div class="text-secondary-emphasis">La aprobare, evenimentul apare public pe platforma.</div></div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-item__dot"><i class="bi bi-3-circle"></i></div>
-                    <div class="timeline-item__body"><strong>Clientii se inscriu</strong><div class="text-secondary-emphasis">Rezervarile raman curate si separate de cererile de organizare.</div></div>
+                    <div class="timeline-item__body"><strong>Publicul se inscrie</strong><div class="text-secondary-emphasis">Participantii pot rezerva locuri direct din pagina evenimentului.</div></div>
                 </div>
             </div>
         <?php endif; ?>

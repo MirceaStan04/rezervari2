@@ -47,7 +47,9 @@ render_header('Admin - editeaza eveniment');
         </div>
         <div class="col-md-4">
             <label class="form-label">Data</label>
-            <input type="date" name="data_eveniment" class="form-control" required value="<?= e($event['data_eveniment']) ?>">
+            <input type="date" name="data_eveniment" class="form-control" required
+                   min="<?= date('Y-m-d', strtotime('+1 day')) ?>"
+                   value="<?= e($event['data_eveniment']) ?>">
         </div>
         <div class="col-md-4">
             <label class="form-label">Ora inceput</label>

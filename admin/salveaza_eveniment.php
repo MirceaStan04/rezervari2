@@ -22,6 +22,12 @@ if ($idEveniment <= 0 || $titlu === '' || $idLocatie <= 0 || $dataEveniment === 
     exit;
 }
 
+if ($dataEveniment <= date('Y-m-d')) {
+    set_flash('warning', 'Data evenimentului trebuie sa fie in viitor.');
+    header('Location: ' . url('admin/editeaza_eveniment.php?id=' . $idEveniment));
+    exit;
+}
+
 try {
     $stmt = $pdo->prepare('UPDATE evenimente SET titlu=?, descriere=?, data_eveniment=?, ora_inceput=?, ora_sfarsit=?, pret=?, capacitate=?, id_locatie=? WHERE id_eveniment=?');
     $stmt->execute([$titlu, $descriere, $dataEveniment, $oraInceput, $oraSfarsit, $pret, $capacitate, $idLocatie, $idEveniment]);
