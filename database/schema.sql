@@ -83,11 +83,23 @@ INSERT INTO utilizatori (nume, email, parola, rol) VALUES
     ('Client Demo',     'client@crimson.ro',
      '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uJDNTbR', 'client');
 
-INSERT INTO locatii (nume_locatie, adresa, capacitate) VALUES
-    ('Sala Thalia',                       'Str. Papiu Ilarian 2, Sibiu',      280),
-    ('Filarmonica de Stat Sibiu',         'B-dul Corneliu Coposu 2, Sibiu',   450),
-    ('Casa de Cultura a Sindicatelor',    'Str. Unirii 20, Sibiu',            320),
-    ('Centrul Cultural Ion Besoiu',       'Str. Mitropoliei 33, Sibiu',       180);
+INSERT INTO locatii (nume_locatie, adresa, capacitate, poza) VALUES
+    ('Sala Thalia',
+     'Str. Papiu Ilarian 2, Sibiu',        280, 'assets/img/locatii/sala-thalia.jpg'),
+    ('Filarmonica de Stat Sibiu',
+     'B-dul Corneliu Coposu 2, Sibiu',     450, 'assets/img/locatii/filarmonica.jpg'),
+    ('Casa de Cultura a Sindicatelor',
+     'Str. Unirii 20, Sibiu',              320, 'assets/img/locatii/piata-mica.jpg'),
+    ('Centrul Cultural Ion Besoiu',
+     'Str. Mitropoliei 33, Sibiu',         180, 'assets/img/locatii/turnul-sfatului.jpg'),
+    ('Piata Mare Sibiu',
+     'Piata Mare 1, Sibiu',               5000, 'assets/img/locatii/piata-mare.jpg'),
+    ('Muzeul National Brukenthal',
+     'Piata Mare 4-5, Sibiu',              200, 'assets/img/locatii/brukenthal.jpg'),
+    ('Parcul Sub Arini',
+     'Str. Armata Romana 1, Sibiu',       3000, 'assets/img/locatii/sub-arini.jpg'),
+    ('Zona Turnul Sfatului – Piata Mica',
+     'Piata Mica 1, Sibiu',               800, 'assets/img/locatii/piata-mica.jpg');
 
 INSERT INTO evenimente (titlu, descriere, data_eveniment, ora_inceput, ora_sfarsit, pret, capacitate, id_locatie) VALUES
     ('Conferinta Tech Sibiu 2026',
