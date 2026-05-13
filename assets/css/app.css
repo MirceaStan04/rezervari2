@@ -338,6 +338,23 @@ img { display: block; }
 .empty-state { text-align: center; padding: 3rem 1.5rem; color: var(--muted); font-size: .95rem; }
 .warning-box { box-shadow: inset 0 0 0 1px var(--warning-dim); }
 
+/* ─── Override Bootstrap text utilities ──────────────────────────────────── */
+/* Bootstrap foloseste data-bs-theme, nu data-theme al nostru.             */
+/* Suprascriem toate clasele de text ca sa raspunda la tema noastra.       */
+.text-secondary-emphasis,
+.text-secondary,
+.text-muted { color: var(--muted) !important; }
+
+.text-body, .text-body-emphasis { color: var(--text) !important; }
+
+.text-success { color: var(--success) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-danger  { color: var(--danger)  !important; }
+
+/* ─── Hero side: carduri sa nu se intinda ─────────────────────────────────── */
+.hero-side { align-content: start; }
+.hero-side .highlight-card { align-self: start; }
+
 /* ─── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 991px) {
     .hero-grid, .split-panel, .kanban-grid { grid-template-columns: 1fr; }
