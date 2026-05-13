@@ -24,53 +24,54 @@ render_header('EventFlow – Gestiune Evenimente Sibiu');
 
 <!-- ─── Hero ─────────────────────────────────────────────────────────────── -->
 <section class="hero-section">
-    <span class="hero-kicker mb-3 d-inline-flex">
-        <i class="bi bi-geo-alt-fill"></i> Sibiu &bull; evenimente &amp; inscrieri
+    <span class="hero-kicker">
+        <i class="bi bi-geo-alt-fill"></i> Sibiu &mdash; Evenimente &amp; Inscrieri
     </span>
-    <h1 class="hero-title" style="max-width:820px">
-        Descopera evenimentele din Sibiu<br>si rezerva-ti locul in secunde.
+    <h1 class="hero-title">
+        Descopera evenimentele<br>
+        din Sibiu &mdash; <span class="accent">rezerva-ti locul.</span>
     </h1>
     <p class="hero-subtitle">
-        Organizatorii propun, adminul valideaza, publicul se inscrie.
-        Un singur flux, trei roluri clare.
+        Organizatorii propun, adminul valideaza, publicul se inscrie —
+        un singur flux, trei roluri clare.
     </p>
-    <div class="d-flex flex-wrap gap-3 mt-4">
+    <div class="hero-actions">
         <a href="<?= e(url('evenimente.php')) ?>" class="btn btn-crimson btn-lg rounded-pill px-4">
             <i class="bi bi-calendar2-event me-2"></i>Vezi evenimentele
         </a>
         <?php if (is_organizer()): ?>
             <a href="<?= e(url('propune_eveniment.php')) ?>" class="btn btn-soft btn-lg rounded-pill px-4">Propune eveniment</a>
         <?php elseif (!is_logged_in()): ?>
-            <a href="<?= e(url('register.php')) ?>" class="btn btn-soft btn-lg rounded-pill px-4">Creeaza cont gratuit</a>
+            <a href="<?= e(url('register.php')) ?>" class="btn btn-soft btn-lg rounded-pill px-4">Creeaza cont</a>
         <?php endif; ?>
     </div>
-    <div class="hero-stats-row">
+    <div class="hero-stats">
         <div class="hero-stat">
-            <i class="bi bi-buildings" style="font-size:1.3rem;color:var(--accent-text);flex-shrink:0"></i>
-            <div><strong><?= (int)$stats['locatii'] ?></strong><span>locatii</span></div>
+            <span class="hero-stat__num"><?= (int)$stats['locatii'] ?></span>
+            <span class="hero-stat__lbl">locatii</span>
         </div>
         <div class="hero-stat">
-            <i class="bi bi-calendar2-check" style="font-size:1.3rem;color:var(--accent-text);flex-shrink:0"></i>
-            <div><strong><?= (int)$stats['evenimente'] ?></strong><span>evenimente</span></div>
+            <span class="hero-stat__num"><?= (int)$stats['evenimente'] ?></span>
+            <span class="hero-stat__lbl">evenimente publicate</span>
         </div>
         <div class="hero-stat">
-            <i class="bi bi-ticket-perforated" style="font-size:1.3rem;color:var(--accent-text);flex-shrink:0"></i>
-            <div><strong><?= (int)$stats['inscrieri'] ?></strong><span>inscrieri</span></div>
+            <span class="hero-stat__num"><?= (int)$stats['inscrieri'] ?></span>
+            <span class="hero-stat__lbl">inscrieri totale</span>
         </div>
     </div>
     <?php if (is_admin() && event_requests_ready($pdo) && $stats['cereri'] > 0): ?>
-        <div class="notice-box mt-4" style="max-width:480px">
+        <div class="notice-box mt-4" style="max-width:460px">
             <strong>Cereri in asteptare</strong>
-            <div class="text-secondary-emphasis small mt-1">
+            <div class="small mt-1" style="color:var(--muted)">
                 <?= (int)$stats['cereri'] ?> cereri de la organizatori.
-                <a href="<?= e(url('admin/cereri_evenimente.php')) ?>">Gestioneaza &rarr;</a>
+                <a href="<?= e(url('admin/cereri_evenimente.php')) ?>" style="color:var(--accent-text)">Gestioneaza &rarr;</a>
             </div>
         </div>
     <?php endif; ?>
 </section>
 
 <!-- ─── 3 roluri ──────────────────────────────────────────────────────────── -->
-<section class="mb-5 pt-2">
+<section class="mb-5">
     <div class="panel-header mb-4">
         <div>
             <h2 class="section-title mb-1">Trei roluri. Un flux simplu.</h2>
@@ -79,19 +80,19 @@ render_header('EventFlow – Gestiune Evenimente Sibiu');
     </div>
     <div class="features-grid">
         <div class="feature-card glass-panel">
-            <div class="feature-icon"><i class="bi bi-people-fill"></i></div>
+            <div class="feature-icon"><i class="bi bi-person-walking"></i></div>
             <h3>Client</h3>
-            <p class="text-secondary-emphasis mb-0">Browsezi evenimentele aprobate, alegi cate locuri vrei si urmaresti statusul inscrierii din cont.</p>
+            <p style="color:var(--muted);font-size:.9rem;margin:0;line-height:1.6">Browsezi evenimentele aprobate, alegi cate locuri vrei si urmaresti statusul inscrierii din cont.</p>
         </div>
         <div class="feature-card glass-panel">
-            <div class="feature-icon"><i class="bi bi-send-check-fill"></i></div>
+            <div class="feature-icon"><i class="bi bi-send-check"></i></div>
             <h3>Organizator</h3>
-            <p class="text-secondary-emphasis mb-0">Trimiti o cerere de eveniment cu locatie, interval orar si pret. Cererea intra la aprobare adminului.</p>
+            <p style="color:var(--muted);font-size:.9rem;margin:0;line-height:1.6">Trimiti o cerere cu locatie, interval orar si pret. Cererea intra la aprobare adminului.</p>
         </div>
         <div class="feature-card glass-panel">
             <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
             <h3>Administrator</h3>
-            <p class="text-secondary-emphasis mb-0">Revizuiesti cererile organizatorilor, aprobi sau respingi, si gestionezi toate inscrierile din dashboard.</p>
+            <p style="color:var(--muted);font-size:.9rem;margin:0;line-height:1.6">Revizuiesti cererile, aprobi sau respingi si gestionezi toate inscrierile din dashboard.</p>
         </div>
     </div>
 </section>
