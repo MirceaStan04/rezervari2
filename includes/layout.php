@@ -4,15 +4,15 @@ function render_header(string $title = 'EventFlow – Gestiune Evenimente Sibiu'
     $loggedIn = is_logged_in();
     $nume = $loggedIn ? ($_SESSION['nume'] ?? 'Cont') : null;
     $flash = get_flash();
+    $theme = isset($_COOKIE['ef-theme']) && $_COOKIE['ef-theme'] === 'light' ? 'light' : 'dark';
     ?>
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="ro" data-theme="<?= $theme ?>" data-bs-theme="<?= $theme ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title) ?></title>
     <meta name="description" content="Platforma de gestiune a evenimentelor si inscrierilor din Sibiu.">
-    <script>(function(){var t=localStorage.getItem('ef-theme')||'dark';var r=document.documentElement;r.setAttribute('data-theme',t);r.setAttribute('data-bs-theme',t);})();</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
