@@ -1,25 +1,24 @@
 (() => {
-  const root = document.documentElement;
-  const storageKey = 'crimson-theme';
-  const toggle = document.querySelector('[data-theme-toggle]');
+    const STORAGE_KEY = 'ef-theme';
+    const root   = document.documentElement;
+    const toggle = document.querySelector('[data-theme-toggle]');
 
-  const applyTheme = (theme) => {
-    root.setAttribute('data-theme', theme);
-    localStorage.setItem(storageKey, theme);
-    if (toggle) {
-      toggle.innerHTML = theme === 'dark'
-        ? '<i class="bi bi-sun-fill"></i><span>Light</span>'
-        : '<i class="bi bi-moon-stars-fill"></i><span>Dark</span>';
+    function applyTheme(theme) {
+        root.setAttribute('data-theme', theme);
+        localStorage.setItem(STORAGE_KEY, theme);
+        if (toggle) {
+            toggle.innerHTML = theme === 'dark'
+                ? '<i class="bi bi-sun-fill"></i><span>Light</span>'
+                : '<i class="bi bi-moon-stars-fill"></i><span>Dark</span>';
+        }
     }
-  };
 
-  const storedTheme = localStorage.getItem(storageKey);
-  applyTheme(storedTheme || 'dark');
+    // Tema e deja aplicata de scriptul din <head>; actualizam doar iconita
+    applyTheme(root.getAttribute('data-theme') || 'dark');
 
-  if (toggle) {
-    toggle.addEventListener('click', () => {
-      const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(nextTheme);
-    });
-  }
+    if (toggle) {
+        toggle.addEventListener('click', () => {
+            applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+    }
 })();

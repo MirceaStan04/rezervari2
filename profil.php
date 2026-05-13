@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
 require_login();
@@ -14,7 +14,7 @@ if (!$user) {
     exit;
 }
 
-render_header('Profilul meu - Crimson Reserve');
+render_header('Profilul meu - EventFlow');
 ?>
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-person-circle"></i> contul meu</span>

@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
 require_organizer();
 
 if (!event_requests_ready($pdo)) {
-    render_header('Cererile mele - Crimson Reserve');
+    render_header('Cererile mele - EventFlow');
     ?>
     <div class="glass-panel empty-state">
         Lipseste tabela <strong>cereri_evenimente</strong>. Ruleaza scriptul <code>database/upgrade_roles_evenimente.sql</code> si reincearca.
@@ -24,7 +24,7 @@ $stmt = $pdo->prepare("SELECT c.*, l.nume_locatie, l.adresa,
 $stmt->execute([(int)$_SESSION['user_id']]);
 $cereri = $stmt->fetchAll();
 
-render_header('Cererile mele - Crimson Reserve');
+render_header('Cererile mele - EventFlow');
 ?>
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-send"></i> zona organizator</span>

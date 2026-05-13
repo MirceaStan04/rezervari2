@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
 
@@ -40,7 +40,7 @@ if (is_client()) {
 $azi    = date('Y-m-d');
 $trecut = ($event['data_eveniment'] ?? '') < $azi;
 
-render_header(e($event['titlu']) . ' - Crimson Reserve');
+render_header(e($event['titlu']) . ' - EventFlow');
 ?>
 <nav class="mb-4">
     <a href="<?= e(url('evenimente.php')) ?>" class="btn btn-soft btn-sm rounded-pill"><i class="bi bi-arrow-left"></i> Inapoi la evenimente</a>

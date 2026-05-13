@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
 
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-render_header('Login - Crimson Reserve');
+render_header('Login - EventFlow');
 ?>
 <section class="auth-card glass-panel p-4 p-lg-5">
     <div class="text-center mb-4">

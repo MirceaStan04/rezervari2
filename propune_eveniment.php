@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
 require_organizer();
@@ -15,7 +15,7 @@ if ($selectedLocatie > 0) {
     $locatieCurenta = $stmt->fetch();
 }
 
-render_header('Propune eveniment - Crimson Reserve');
+render_header('Propune eveniment - EventFlow');
 ?>
 <section class="split-panel">
     <div class="glass-panel p-4 p-lg-5">

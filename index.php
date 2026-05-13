@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
 
@@ -17,14 +17,14 @@ $evenimente = $pdo->query("SELECT e.id_eveniment, e.titlu, e.descriere, e.data_e
                           ORDER BY e.data_eveniment ASC, e.ora_inceput ASC
                           LIMIT 4")->fetchAll();
 
-render_header('Crimson Reserve - evenimente si inscrieri');
+render_header('EventFlow - evenimente si inscrieri');
 ?>
 <section class="hero-grid mb-5">
     <div class="glass-panel hero-copy">
         <span class="hero-kicker"><i class="bi bi-stars"></i> evenimente & inscrieri in Sibiu</span>
         <h1 class="hero-title">Descopera evenimentele din Sibiu si rezerva-ti locul in cateva secunde.</h1>
         <p class="hero-subtitle">
-            Crimson Reserve conecteaza clientii cu evenimentele potrivite. Organizatorii propun, adminul valideaza, publicul se inscrie simplu si rapid.
+            EventFlow conecteaza clientii cu evenimentele potrivite. Organizatorii propun, adminul valideaza, publicul se inscrie simplu si rapid.
         </p>
         <div class="d-flex flex-wrap gap-3 mt-4">
             <a href="<?= e(url('evenimente.php')) ?>" class="btn btn-crimson btn-lg rounded-pill px-4">Vezi evenimentele</a>

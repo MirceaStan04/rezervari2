@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
 require_client();
@@ -37,7 +37,7 @@ if ($capEveniment > 0) {
     $locuriDisponibile = max(0, $capEveniment - $locuriOcupate);
 }
 
-render_header('Inscriere la eveniment - Crimson Reserve');
+render_header('Inscriere la eveniment - EventFlow');
 ?>
 <section class="split-panel">
     <div class="glass-panel p-4 p-lg-5">

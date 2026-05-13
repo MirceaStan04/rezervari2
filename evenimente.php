@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
 
@@ -19,7 +19,7 @@ foreach ($evenimente as $event) {
     }
 }
 
-render_header('Evenimente - Crimson Reserve');
+render_header('Evenimente - EventFlow');
 ?>
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-mic"></i> agenda publica</span>

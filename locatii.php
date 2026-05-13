@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
 
 $locatii = $pdo->query('SELECT id_locatie, nume_locatie, adresa, capacitate, poza FROM locatii ORDER BY nume_locatie ASC')->fetchAll();
 
-render_header('Locatii - Crimson Reserve');
+render_header('Locatii - EventFlow');
 ?>
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-buildings"></i> catalog locatii</span>

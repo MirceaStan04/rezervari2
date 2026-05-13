@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/layout.php';
 require_client();
@@ -14,7 +14,7 @@ $stmt = $pdo->prepare("SELECT r.id_rezervare, r.numar_locuri, r.data_rezervare, 
 $stmt->execute([(int)$_SESSION['user_id']]);
 $rezervari = $stmt->fetchAll();
 
-render_header('Inscrierile mele - Crimson Reserve');
+render_header('Inscrierile mele - EventFlow');
 ?>
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-ticket-detailed"></i> contul meu</span>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/admin_check.php';
 require __DIR__ . '/../includes/layout.php';
 
@@ -29,7 +29,7 @@ foreach ($rezervariRecente as $rez) {
     }
 }
 
-render_header('Admin dashboard - Crimson Reserve');
+render_header('Admin dashboard - EventFlow');
 ?>
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-speedometer2"></i> zona de administrare</span>
