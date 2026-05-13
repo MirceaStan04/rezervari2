@@ -32,8 +32,7 @@ render_header('EventFlow – Gestiune Evenimente Sibiu');
         din Sibiu &mdash; <span class="accent">rezerva-ti locul.</span>
     </h1>
     <p class="hero-subtitle">
-        Organizatorii propun, adminul valideaza, publicul se inscrie —
-        un singur flux, trei roluri clare.
+        Descopera evenimentele din Sibiu, alege-ti locul si confirma inscrierea in cateva secunde.
     </p>
     <div class="hero-actions">
         <a href="<?= e(url('evenimente.php')) ?>" class="btn btn-crimson btn-lg rounded-pill px-4">
@@ -47,16 +46,16 @@ render_header('EventFlow – Gestiune Evenimente Sibiu');
     </div>
     <div class="hero-stats">
         <div class="hero-stat">
-            <span class="hero-stat__num"><?= (int)$stats['locatii'] ?></span>
-            <span class="hero-stat__lbl">locatii</span>
+            <div class="hero-stat__num"><?= (int)$stats['locatii'] ?></div>
+            <div class="hero-stat__lbl">locatii</div>
         </div>
         <div class="hero-stat">
-            <span class="hero-stat__num"><?= (int)$stats['evenimente'] ?></span>
-            <span class="hero-stat__lbl">evenimente publicate</span>
+            <div class="hero-stat__num"><?= (int)$stats['evenimente'] ?></div>
+            <div class="hero-stat__lbl">evenimente</div>
         </div>
         <div class="hero-stat">
-            <span class="hero-stat__num"><?= (int)$stats['inscrieri'] ?></span>
-            <span class="hero-stat__lbl">inscrieri totale</span>
+            <div class="hero-stat__num"><?= (int)$stats['inscrieri'] ?></div>
+            <div class="hero-stat__lbl">inscrieri</div>
         </div>
     </div>
     <?php if (is_admin() && event_requests_ready($pdo) && $stats['cereri'] > 0): ?>
@@ -70,29 +69,28 @@ render_header('EventFlow – Gestiune Evenimente Sibiu');
     <?php endif; ?>
 </section>
 
-<!-- ─── 3 roluri ──────────────────────────────────────────────────────────── -->
+<!-- ─── 2 roluri ──────────────────────────────────────────────────────────── -->
 <section class="mb-5">
-    <div class="panel-header mb-4">
-        <div>
-            <h2 class="section-title mb-1">Trei roluri. Un flux simplu.</h2>
-            <p class="section-subtitle mb-0">Fiecare utilizator are zona lui clara in platforma.</p>
+    <div class="roles-grid">
+        <div class="role-card glass-panel">
+            <div class="role-card__icon"><i class="bi bi-ticket-perforated"></i></div>
+            <div class="role-card__body">
+                <h3 class="role-card__title">Particip la evenimente</h3>
+                <p class="role-card__text">Rasfoieste evenimentele disponibile, alege cate locuri vrei si urmareste statusul inscrierii din contul tau.</p>
+                <a href="<?= e(url(!is_logged_in() ? 'register.php' : 'evenimente.php')) ?>" class="btn btn-soft rounded-pill btn-sm mt-2">
+                    <?= !is_logged_in() ? 'Creeaza cont gratuit' : 'Vezi evenimentele' ?> <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
         </div>
-    </div>
-    <div class="features-grid">
-        <div class="feature-card glass-panel">
-            <div class="feature-icon"><i class="bi bi-person-walking"></i></div>
-            <h3>Client</h3>
-            <p style="color:var(--muted);font-size:.9rem;margin:0;line-height:1.6">Browsezi evenimentele aprobate, alegi cate locuri vrei si urmaresti statusul inscrierii din cont.</p>
-        </div>
-        <div class="feature-card glass-panel">
-            <div class="feature-icon"><i class="bi bi-send-check"></i></div>
-            <h3>Organizator</h3>
-            <p style="color:var(--muted);font-size:.9rem;margin:0;line-height:1.6">Trimiti o cerere cu locatie, interval orar si pret. Cererea intra la aprobare adminului.</p>
-        </div>
-        <div class="feature-card glass-panel">
-            <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
-            <h3>Administrator</h3>
-            <p style="color:var(--muted);font-size:.9rem;margin:0;line-height:1.6">Revizuiesti cererile, aprobi sau respingi si gestionezi toate inscrierile din dashboard.</p>
+        <div class="role-card glass-panel">
+            <div class="role-card__icon"><i class="bi bi-calendar2-plus"></i></div>
+            <div class="role-card__body">
+                <h3 class="role-card__title">Organizez evenimente</h3>
+                <p class="role-card__text">Propune un eveniment cu locatie, interval orar si pret. Dupa aprobare apare public si participantii se pot inscrie direct.</p>
+                <a href="<?= e(url(!is_logged_in() ? 'register.php?rol=organizator' : 'propune_eveniment.php')) ?>" class="btn btn-soft rounded-pill btn-sm mt-2">
+                    <?= !is_logged_in() ? 'Inregistreaza-te ca organizator' : 'Propune eveniment' ?> <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
         </div>
     </div>
 </section>
