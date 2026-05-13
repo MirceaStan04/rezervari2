@@ -43,7 +43,7 @@ render_header('Inscriere la eveniment - EventFlow');
     <div class="glass-panel p-4 p-lg-5">
         <span class="card-tag mb-3"><i class="bi bi-ticket-perforated"></i> inscriere eveniment</span>
         <h1 class="section-title mb-2"><?= e($event['titlu']) ?></h1>
-        <p class="section-subtitle mb-4">Doar clientii se pot inscrie la evenimentele publicate. Organizatorii au un flux separat si pot trimite cereri pentru evenimente noi din meniul dedicat.</p>
+        <p class="section-subtitle mb-4">Completeaza formularul de mai jos pentru a-ti rezerva locul la acest eveniment.</p>
 
         <?php if ($already): ?>
             <div class="notice-box mb-4">

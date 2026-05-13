@@ -17,7 +17,7 @@ $evenimente = $pdo->query("SELECT e.id_eveniment, e.titlu, e.descriere, e.data_e
                            JOIN locatii l ON e.id_locatie = l.id_locatie
                            WHERE e.data_eveniment >= CURRENT_DATE
                            ORDER BY e.data_eveniment ASC, e.ora_inceput ASC
-                           LIMIT 4")->fetchAll();
+                           LIMIT 3")->fetchAll();
 
 render_header('EventFlow – Gestiune Evenimente Sibiu');
 ?>

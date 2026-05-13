@@ -58,7 +58,7 @@ render_header($locatie['nume_locatie'] . ' - detalii locatie');
     <div class="panel-header">
         <div>
             <h2 class="section-title mb-1">Disponibilitate pe urmatoarele 21 zile</h2>
-            <p class="section-subtitle mb-0">Zilele ocupate sunt trase direct din tabelul evenimente deja aprobate.</p>
+            <p class="section-subtitle mb-0">Zilele in care locatia este rezervata pentru un eveniment.</p>
         </div>
     </div>
     <div class="calendar-grid">
@@ -79,7 +79,7 @@ render_header($locatie['nume_locatie'] . ' - detalii locatie');
     <div class="panel-header">
         <div>
             <h2 class="section-title mb-1">Evenimente programate aici</h2>
-            <p class="section-subtitle mb-0">Clientii se pot inscrie direct la ele.</p>
+            <p class="section-subtitle mb-0">Inscrie-te la evenimentele disponibile din aceasta locatie.</p>
         </div>
     </div>
     <?php if ($evenimenteLocatie): ?>

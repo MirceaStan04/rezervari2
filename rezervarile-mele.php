@@ -19,7 +19,7 @@ render_header('Inscrierile mele - EventFlow');
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-ticket-detailed"></i> contul meu</span>
     <h1 class="section-title mb-2">Inscrierile mele</h1>
-    <p class="section-subtitle">Aici vezi evenimentele la care te-ai inscris ca participant, din rolul de client.</p>
+    <p class="section-subtitle">Evenimentele la care te-ai inscris si statusul fiecarei inscrieri.</p>
 </section>
 
 <?php if ($rezervari): ?>

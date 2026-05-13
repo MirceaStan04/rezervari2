@@ -28,7 +28,7 @@ render_header('Admin - inscrieri');
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-clipboard-check"></i> management inscrieri</span>
     <h1 class="section-title mb-2">Inscrieri la evenimente</h1>
-    <p class="section-subtitle">Clientii rezerva locuri la evenimente deja publicate. Adminul aproba sau respinge inscrierile exact ca intr-un flux real.</p>
+    <p class="section-subtitle">Gestioneaza inscrierile clientilor la evenimentele publicate. Aproba sau respinge cererile din coloanele de mai jos.</p>
 </section>
 
 <div class="kanban-grid">

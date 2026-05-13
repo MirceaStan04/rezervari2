@@ -99,7 +99,7 @@ function render_footer(): void
                 <strong>EventFlow</strong>
                 <div class="footer-copy">Sistem de gestiune a evenimentelor si inscrierilor.</div>
             </div>
-            <div class="footer-copy">&copy; <?= date('Y') ?> &bull; Proiect de licenta &bull; PHP + PostgreSQL + Bootstrap</div>
+            <div class="footer-copy">&copy; <?= date('Y') ?> EventFlow &bull; Platforma de evenimente din Sibiu</div>
         </div>
     </footer>
 </div>

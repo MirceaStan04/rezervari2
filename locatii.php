@@ -9,7 +9,7 @@ render_header('Locatii - EventFlow');
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-buildings"></i> catalog locatii</span>
     <h1 class="section-title mb-2">Locatii disponibile pentru evenimente</h1>
-    <p class="section-subtitle">Am inlocuit listarea minimalista cu un catalog vizual, usor de vandut in fata unui profesor sau client.</p>
+    <p class="section-subtitle">Alege locatia potrivita pentru evenimentul tau — de la sali de spectacol la spatii in aer liber.</p>
 </section>
 
 <?php if ($locatii): ?>

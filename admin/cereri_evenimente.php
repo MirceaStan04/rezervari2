@@ -8,8 +8,8 @@ if (!event_requests_ready($pdo)) {
     ?>
     <section class="mb-4">
         <span class="card-tag mb-3"><i class="bi bi-inboxes"></i> cereri organizatori</span>
-        <h1 class="section-title mb-2">Tabela lipseste</h1>
-        <p class="section-subtitle">Ruleaza scriptul <code>database/upgrade_roles_evenimente.sql</code> si reintra pe pagina.</p>
+        <h1 class="section-title mb-2">Functionalitate indisponibila</h1>
+        <p class="section-subtitle">Aceasta sectiune nu este disponibila momentan. Contactati administratorul de sistem.</p>
     </section>
     <?php
     render_footer();
@@ -33,7 +33,7 @@ foreach ($requests as $req) {
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-inboxes"></i> cereri organizatori</span>
     <h1 class="section-title mb-2">Cereri de creare eveniment</h1>
-    <p class="section-subtitle">Aprobi o cerere si ea se transforma automat intr-un eveniment public. Respinsa ramane in istoric.</p>
+    <p class="section-subtitle">Revizuieste propunerile organizatorilor si decide ce apare public pe platforma.</p>
 </section>
 
 <div class="kanban-grid">
