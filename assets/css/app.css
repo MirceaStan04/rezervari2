@@ -206,8 +206,7 @@ img { display: block; }
 .kanban-grid    { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
 
 /* ─── Hero ────────────────────────────────────────────────────────────────── */
-.hero-copy { padding: clamp(1.5rem, 2.5vw, 2.5rem); }
-.hero-side { padding: 1.25rem; display: grid; gap: 1rem; align-content: start; }
+.hero-section { padding: clamp(2.5rem, 5vw, 4.5rem) 0 clamp(2rem, 4vw, 3.5rem); }
 .hero-kicker {
     display: inline-flex; align-items: center; gap: .55rem;
     border-radius: var(--r-pill); background: var(--accent-dim);
@@ -215,20 +214,44 @@ img { display: block; }
     font-weight: 700; font-size: .8rem; letter-spacing: .03em;
 }
 .hero-title {
-    font-size: clamp(2.2rem, 3.8vw, 4.2rem);
-    line-height: 1.05; font-weight: 800; letter-spacing: -.04em;
-    margin: .9rem 0;
+    font-size: clamp(2.4rem, 4vw, 4rem);
+    line-height: 1.07; font-weight: 800; letter-spacing: -.04em;
+    margin: .9rem 0 1rem;
 }
-.hero-subtitle { color: var(--muted); font-size: 1.02rem; max-width: 52rem; line-height: 1.65; }
+.hero-subtitle { color: var(--muted); font-size: 1.04rem; max-width: 58rem; line-height: 1.7; }
+.hero-stats-row {
+    display: flex; gap: 2.5rem; flex-wrap: wrap;
+    margin-top: 1.75rem; padding-top: 1.75rem;
+    border-top: 1px solid var(--border);
+}
+.hero-stat strong { display: block; font-size: 1.7rem; font-weight: 800; line-height: 1; }
+.hero-stat span   { color: var(--muted); font-size: .85rem; margin-top: .2rem; display: block; }
+
+/* ─── Features (3 roluri) ─────────────────────────────────────────────────── */
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.feature-card  { padding: 1.75rem 1.5rem; text-align: center; }
+.feature-icon  {
+    width: 52px; height: 52px; border-radius: 16px; margin: 0 auto 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent-dim); color: var(--accent-text); font-size: 1.3rem;
+}
+.feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+
+/* kept for backward compat (locatie.php hero-side) */
+.hero-copy { padding: clamp(1.5rem, 2.5vw, 2.5rem); }
+.hero-side { padding: 1.25rem; display: grid; gap: 1rem; align-content: start; }
 
 /* ─── Carduri imagine ─────────────────────────────────────────────────────── */
 .location-card, .event-card, .user-card { overflow: hidden; }
 .location-card__image, .event-card__image {
-    width: 100%; height: 210px; object-fit: cover;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
     transition: transform .4s ease;
 }
 .location-card:hover .location-card__image,
-.event-card:hover .event-card__image { transform: scale(1.03); }
+.event-card:hover .event-card__image { transform: scale(1.04); }
 .location-card__body, .event-card__body, .user-card__body { padding: 1.25rem; }
 
 /* ─── Tipografie & etichete ───────────────────────────────────────────────── */
@@ -359,10 +382,12 @@ img { display: block; }
 @media (max-width: 991px) {
     .hero-grid, .split-panel, .kanban-grid { grid-template-columns: 1fr; }
     .metric-row { grid-template-columns: repeat(2,1fr); }
+    .features-grid { grid-template-columns: 1fr; gap: 1rem; }
 }
 @media (max-width: 640px) {
     .hero-title { font-size: 2.1rem; }
     .brand-mark small { display: none; }
     .metric-row { grid-template-columns: 1fr; }
     .kanban-grid { grid-template-columns: 1fr; }
+    .hero-stats-row { gap: 1.5rem; }
 }
