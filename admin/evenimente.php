@@ -12,9 +12,14 @@ $evenimente = $pdo->query("SELECT e.id_eveniment, e.titlu, e.descriere, e.data_e
 render_header('Admin - evenimente');
 ?>
 <section class="mb-4">
-    <span class="card-tag mb-3"><i class="bi bi-calendar4-event"></i> management evenimente</span>
-    <h1 class="section-title mb-2">Agenda completa</h1>
-    <p class="section-subtitle">Aici vezi doar evenimentele publicate. Propunerile noi stau separat in pagina de cereri.</p>
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+            <span class="card-tag mb-3"><i class="bi bi-calendar4-event"></i> management evenimente</span>
+            <h1 class="section-title mb-2">Agenda completa</h1>
+            <p class="section-subtitle">Evenimentele publicate in sistem. Propunerile noi se aproba din pagina de cereri.</p>
+        </div>
+        <a href="<?= e(url('admin/cereri_evenimente.php')) ?>" class="btn btn-soft rounded-pill"><i class="bi bi-inboxes"></i> Cereri in asteptare</a>
+    </div>
 </section>
 
 <?php if ($evenimente): ?>
@@ -35,7 +40,15 @@ render_header('Admin - evenimente');
                     </div>
                     <p class="text-secondary-emphasis mb-3"><?= e(short_text((string)($event['descriere'] ?? 'Fara descriere.'), 140)) ?></p>
                     <div class="small text-secondary-emphasis mb-3">Inscrieri totale: <?= (int)$event['inscrieri_totale'] ?></div>
-                    <a href="<?= e(url('rezervare.php?eveniment=' . (int)$event['id_eveniment'])) ?>" class="btn btn-soft rounded-pill">Deschide ca utilizator</a>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="<?= e(url('eveniment.php?id=' . (int)$event['id_eveniment'])) ?>" class="btn btn-soft rounded-pill">Pagina publica</a>
+                        <a href="<?= e(url('admin/editeaza_eveniment.php?id=' . (int)$event['id_eveniment'])) ?>" class="btn btn-soft rounded-pill"><i class="bi bi-pencil"></i> Editeaza</a>
+                        <a href="<?= e(url('admin/sterge_eveniment.php?id=' . (int)$event['id_eveniment'])) ?>"
+                           class="btn btn-soft rounded-pill text-danger"
+                           onclick="return confirm('Stergi evenimentul <?= e(addslashes($event['titlu'])) ?>? Toate inscrierile asociate vor fi sterse.')">
+                            <i class="bi bi-trash"></i> Sterge
+                        </a>
+                    </div>
                 </div>
             </article>
         <?php endforeach; ?>

@@ -21,10 +21,10 @@ render_header('Crimson Reserve - evenimente si inscrieri');
 ?>
 <section class="hero-grid mb-5">
     <div class="glass-panel hero-copy">
-        <span class="hero-kicker"><i class="bi bi-stars"></i> platforma cu 3 roluri clare</span>
-        <h1 class="hero-title">Clientii se inscriu la evenimente. Organizatorii doar propun evenimente. Adminul publica ce merita sa intre live.</h1>
+        <span class="hero-kicker"><i class="bi bi-stars"></i> evenimente & inscrieri in Sibiu</span>
+        <h1 class="hero-title">Descopera evenimentele din Sibiu si rezerva-ti locul in cateva secunde.</h1>
         <p class="hero-subtitle">
-            Acum proiectul are flux comercial real: clientii se inscriu la evenimente existente, organizatorii au flux separat de propunere, iar adminul aproba ce intra live.
+            Crimson Reserve conecteaza clientii cu evenimentele potrivite. Organizatorii propun, adminul valideaza, publicul se inscrie simplu si rapid.
         </p>
         <div class="d-flex flex-wrap gap-3 mt-4">
             <a href="<?= e(url('evenimente.php')) ?>" class="btn btn-crimson btn-lg rounded-pill px-4">Vezi evenimentele</a>
@@ -48,10 +48,10 @@ render_header('Crimson Reserve - evenimente si inscrieri');
                 <span>inscrieri totale</span>
             </div>
         </div>
-        <?php if (event_requests_ready($pdo)): ?>
+        <?php if (is_admin() && event_requests_ready($pdo) && $stats['cereri'] > 0): ?>
             <div class="notice-box mt-4">
-                <strong>Cereri organizatori in asteptare</strong>
-                <div class="text-secondary-emphasis small mt-2"><?= (int)$stats['cereri'] ?> cereri asteapta aprobarea unui admin.</div>
+                <strong>Cereri in asteptare</strong>
+                <div class="text-secondary-emphasis small mt-2"><?= (int)$stats['cereri'] ?> cereri de la organizatori asteapta aprobare. <a href="<?= e(url('admin/cereri_evenimente.php')) ?>">Gestioneaza</a></div>
             </div>
         <?php endif; ?>
     </div>
@@ -90,8 +90,8 @@ render_header('Crimson Reserve - evenimente si inscrieri');
 <section class="mb-5">
     <div class="panel-header">
         <div>
-            <h2 class="section-title mb-1">Evenimente pe care le poti vinde</h2>
-            <p class="section-subtitle mb-0">Carduri publice, call to action clar si traseu de inscriere separat de propunerea de eveniment.</p>
+            <h2 class="section-title mb-1">Urmatoarele evenimente</h2>
+            <p class="section-subtitle mb-0">Evenimente aprobate, disponibile pentru inscriere.</p>
         </div>
         <a href="<?= e(url('evenimente.php')) ?>" class="btn btn-soft rounded-pill">Vezi toate</a>
     </div>
@@ -120,7 +120,7 @@ render_header('Crimson Reserve - evenimente si inscrieri');
                             <?php elseif (is_organizer()): ?>
                                 <a href="<?= e(url('propune_eveniment.php')) ?>" class="btn btn-soft rounded-pill">Propune eveniment</a>
                             <?php endif; ?>
-                            <a href="<?= e(url('locatie.php?id=' . (int)$ev['id_locatie'])) ?>" class="btn btn-soft rounded-pill">Vezi locatia</a>
+                            <a href="<?= e(url('eveniment.php?id=' . (int)$ev['id_eveniment'])) ?>" class="btn btn-soft rounded-pill">Detalii</a>
                         </div>
                     </div>
                 </article>
@@ -134,7 +134,7 @@ render_header('Crimson Reserve - evenimente si inscrieri');
 <section class="split-panel mb-5">
     <div class="glass-panel p-4 p-lg-5">
         <span class="card-tag mb-3"><i class="bi bi-diagram-3"></i> flux nou</span>
-        <h2 class="section-title mb-3">Model de lucru mai curat decat varianta initiala.</h2>
+        <h2 class="section-title mb-3">Cum functioneaza platforma</h2>
         <div class="timeline">
             <div class="timeline-item">
                 <div class="timeline-item__dot"><i class="bi bi-person-badge"></i></div>

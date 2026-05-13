@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\laragon\\\\www\\\\rezervari2\\\\.claude\\\\worktrees\\\\stoic-brattain-1cbcbd\" -Recurse -Force)",
+      "Bash(Select-Object -First 200)",
+      "Bash(Format-List FullName)",
+      "Bash(cd \"C:\\\\\\\\laragon\\\\\\\\www\\\\\\\\rezervari2\\\\\\\\.claude\\\\\\\\worktrees\\\\\\\\stoic-brattain-1cbcbd\")",
+      "Bash(git add *)"
+    ]
+  }
+}

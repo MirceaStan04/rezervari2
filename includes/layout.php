@@ -56,7 +56,9 @@ function render_header(string $title = 'Rezervari Evenimente Sibiu'): void
                         </li>
                         <?php if ($loggedIn): ?>
                             <li class="nav-item ms-lg-2">
-                                <span class="nav-user-pill"><i class="bi bi-person-circle"></i> <?= e($nume) ?> <small class="role-pill"><?= e(role_label($_SESSION['rol'] ?? 'client')) ?></small></span>
+                                <a href="<?= e(url('profil.php')) ?>" class="nav-user-pill text-decoration-none">
+                                    <i class="bi bi-person-circle"></i> <?= e($nume) ?> <small class="role-pill"><?= e(role_label($_SESSION['rol'] ?? 'client')) ?></small>
+                                </a>
                             </li>
                             <li class="nav-item ms-lg-2">
                                 <a href="<?= e(url('logout.php')) ?>" class="btn btn-outline-light btn-sm rounded-pill px-3">Logout</a>

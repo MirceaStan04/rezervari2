@@ -34,7 +34,7 @@ render_header('Admin dashboard - Crimson Reserve');
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-speedometer2"></i> zona de administrare</span>
     <h1 class="section-title mb-2">Panou administrator</h1>
-    <p class="section-subtitle">Acum adminul are si controlul pe cererile organizatorilor, nu doar pe inscrierile clientilor.</p>
+    <p class="section-subtitle">Gestioneaza locatiile, evenimentele, utilizatorii, inscrierile si cererile de eveniment.</p>
 </section>
 
 <div class="dashboard-grid mb-5">

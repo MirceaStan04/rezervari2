@@ -17,7 +17,7 @@ if ($idEveniment <= 0) {
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT id_eveniment, data_eveniment FROM evenimente WHERE id_eveniment = ?');
+$stmt = $pdo->prepare('SELECT id_eveniment, data_eveniment, capacitate FROM evenimente WHERE id_eveniment = ?');
 $stmt->execute([$idEveniment]);
 $event = $stmt->fetch();
 if (!$event) {
@@ -32,6 +32,21 @@ if ((int)$dupStmt->fetchColumn() > 0) {
     set_flash('warning', 'Esti deja inscris la acest eveniment.');
     header('Location: ' . url('rezervarile-mele.php'));
     exit;
+}
+
+$capacitate = (int)($event['capacitate'] ?? 0);
+if ($capacitate > 0) {
+    $locStmt = $pdo->prepare("SELECT COALESCE(SUM(numar_locuri), 0) FROM rezervari WHERE id_eveniment = ? AND status NOT IN ('respinsa','anulata','rejected','cancelled')");
+    $locStmt->execute([$idEveniment]);
+    $locuriOcupate = (int)$locStmt->fetchColumn();
+    if ($locuriOcupate + $numarLocuri > $capacitate) {
+        $ramase = max(0, $capacitate - $locuriOcupate);
+        set_flash('danger', $ramase > 0
+            ? "Nu sunt suficiente locuri disponibile. Mai sunt doar {$ramase} locuri."
+            : 'Evenimentul este complet. Nu mai sunt locuri disponibile.');
+        header('Location: ' . url('rezervare.php?eveniment=' . $idEveniment));
+        exit;
+    }
 }
 
 try {
