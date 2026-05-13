@@ -126,8 +126,16 @@ function is_client(): bool
     return is_logged_in() && current_role() === 'client';
 }
 
+function no_cache(): void
+{
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+}
+
 function require_login(): void
 {
+    no_cache();
     if (!is_logged_in()) {
         set_flash('warning', 'Trebuie sa fii autentificat pentru a continua.');
         header('Location: ' . url('login.php'));
@@ -139,7 +147,7 @@ function require_client(): void
 {
     require_login();
     if (!is_client()) {
-        set_flash('danger', 'Doar clientii se pot inscrie la evenimente. Organizatorii trimit cereri de eveniment din zona dedicata.');
+        set_flash('danger', 'Aceasta zona este disponibila doar clientilor.');
         header('Location: ' . url('index.php'));
         exit;
     }
