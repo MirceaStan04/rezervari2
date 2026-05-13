@@ -5,6 +5,7 @@
 
     function applyTheme(theme) {
         root.setAttribute('data-theme', theme);
+        root.setAttribute('data-bs-theme', theme);   // Bootstrap utilities (text-secondary-emphasis etc.)
         localStorage.setItem(STORAGE_KEY, theme);
         if (toggle) {
             toggle.innerHTML = theme === 'dark'
@@ -13,7 +14,6 @@
         }
     }
 
-    // Tema e deja aplicata de scriptul din <head>; actualizam doar iconita
     applyTheme(root.getAttribute('data-theme') || 'dark');
 
     if (toggle) {

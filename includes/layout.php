@@ -12,7 +12,7 @@ function render_header(string $title = 'EventFlow – Gestiune Evenimente Sibiu'
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title) ?></title>
     <meta name="description" content="Platforma de gestiune a evenimentelor si inscrierilor din Sibiu.">
-    <script>(function(){var t=localStorage.getItem('ef-theme');document.documentElement.setAttribute('data-theme',t||'dark');})();</script>
+    <script>(function(){var t=localStorage.getItem('ef-theme')||'dark';var r=document.documentElement;r.setAttribute('data-theme',t);r.setAttribute('data-bs-theme',t);})();</script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= e(asset('assets/css/app.css')) ?>">
