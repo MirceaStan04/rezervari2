@@ -21,4 +21,11 @@
             applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         });
     }
+
+    // Re-aplica tema la restore din bfcache (inainte/inapoi in browser)
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted) {
+            applyTheme(localStorage.getItem(STORAGE_KEY) || 'dark');
+        }
+    });
 })();
