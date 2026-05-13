@@ -10,7 +10,7 @@ if ($idEveniment <= 0) {
     exit;
 }
 
-$stmt = $pdo->prepare("SELECT e.id_eveniment, e.titlu, e.descriere, e.data_eveniment, e.ora_inceput, e.ora_sfarsit, e.pret,
+$stmt = $pdo->prepare("SELECT e.id_eveniment, e.titlu, e.descriere, e.data_eveniment, e.ora_inceput, e.ora_sfarsit, e.pret, e.capacitate AS cap_eveniment,
                               l.id_locatie, l.nume_locatie, l.adresa, l.capacitate, l.poza
                        FROM evenimente e
                        JOIN locatii l ON e.id_locatie = l.id_locatie
@@ -27,6 +27,15 @@ if (!$event) {
 $stmt = $pdo->prepare('SELECT COUNT(*) FROM rezervari WHERE id_eveniment = ? AND id_utilizator = ? AND status NOT IN (\'respinsa\', \'anulata\', \'rejected\', \'cancelled\')');
 $stmt->execute([$idEveniment, (int)$_SESSION['user_id']]);
 $already = (int)$stmt->fetchColumn() > 0;
+
+$capEveniment = (int)($event['cap_eveniment'] ?? 0);
+$locuriDisponibile = null;
+if ($capEveniment > 0) {
+    $locStmt = $pdo->prepare("SELECT COALESCE(SUM(numar_locuri), 0) FROM rezervari WHERE id_eveniment = ? AND status NOT IN ('respinsa','anulata','rejected','cancelled')");
+    $locStmt->execute([$idEveniment]);
+    $locuriOcupate = (int)$locStmt->fetchColumn();
+    $locuriDisponibile = max(0, $capEveniment - $locuriOcupate);
+}
 
 render_header('Inscriere la eveniment - Crimson Reserve');
 ?>
@@ -50,8 +59,14 @@ render_header('Inscriere la eveniment - Crimson Reserve');
                 <input type="text" class="form-control locked-input" value="<?= e($event['titlu']) ?>" disabled>
             </div>
             <div class="col-md-5">
-                <label class="form-label">Numar locuri dorite</label>
-                <input type="number" name="numar_locuri" class="form-control" required min="1" value="1">
+                <label class="form-label">Numar locuri dorite
+                    <?php if ($locuriDisponibile !== null): ?>
+                        <small class="text-secondary-emphasis">(<?= $locuriDisponibile ?> disponibile)</small>
+                    <?php endif; ?>
+                </label>
+                <input type="number" name="numar_locuri" class="form-control" required min="1"
+                       <?= $locuriDisponibile !== null ? 'max="' . $locuriDisponibile . '"' : '' ?>
+                       value="1">
             </div>
             <div class="col-md-4">
                 <label class="form-label">Data</label>
@@ -77,8 +92,11 @@ render_header('Inscriere la eveniment - Crimson Reserve');
         <h2 class="section-title h3 mb-2"><?= e($event['nume_locatie']) ?></h2>
         <p class="section-subtitle mb-4"><?= e($event['adresa']) ?></p>
         <div class="d-grid gap-3 mb-4">
-            <div class="detail-chip"><strong>Capacitate locatie</strong><span><?= (int)$event['capacitate'] ?> persoane</span></div>
-            <div class="detail-chip"><strong>Tarif listat</strong><span><?= e(format_money($event['pret'] ?? 0)) ?></span></div>
+            <?php if ($locuriDisponibile !== null): ?>
+                <div class="detail-chip"><strong>Locuri disponibile</strong><span><?= $locuriDisponibile ?> / <?= $capEveniment ?></span></div>
+            <?php endif; ?>
+            <div class="detail-chip"><strong>Capacitate sala</strong><span><?= (int)$event['capacitate'] ?> persoane</span></div>
+            <div class="detail-chip"><strong>Tarif</strong><span><?= e(format_money($event['pret'] ?? 0)) ?></span></div>
         </div>
         <img class="location-card__image rounded-4" src="<?= e(loc_image($event['poza'] ?? '')) ?>" alt="<?= e($event['nume_locatie']) ?>">
     </aside>

@@ -24,14 +24,14 @@ render_header('Evenimente - Crimson Reserve');
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-mic"></i> agenda publica</span>
     <h1 class="section-title mb-2">Evenimente active in sistem</h1>
-    <p class="section-subtitle">Aici intra doar evenimentele deja aprobate de admin. Doar clientii se pot inscrie, iar organizatorii propun alte evenimente din formularul dedicat.</p>
+    <p class="section-subtitle">Evenimente aprobate, disponibile pentru inscriere. Clientii se pot inscrie direct, iar organizatorii pot propune evenimente noi din zona dedicata.</p>
 </section>
 
 <section class="mb-5">
     <div class="panel-header">
         <div>
             <h2 class="section-title mb-1">Urmatoarele evenimente</h2>
-            <p class="section-subtitle mb-0">Carduri publice cu call to action clar pentru inscriere.</p>
+            <p class="section-subtitle mb-0">Inscrie-te la evenimentele disponibile din Sibiu.</p>
         </div>
         <?php if (is_organizer()): ?>
             <a href="<?= e(url('propune_eveniment.php')) ?>" class="btn btn-soft rounded-pill">Propune un eveniment</a>
@@ -63,7 +63,7 @@ render_header('Evenimente - Crimson Reserve');
                             <?php elseif (!is_logged_in()): ?>
                                 <a href="<?= e(url('login.php')) ?>" class="btn btn-crimson rounded-pill">Intra ca sa te inscrii</a>
                             <?php endif; ?>
-                            <a href="<?= e(url('locatie.php?id=' . (int)$event['id_locatie'])) ?>" class="btn btn-soft rounded-pill">Vezi locatia</a>
+                            <a href="<?= e(url('eveniment.php?id=' . (int)$event['id_eveniment'])) ?>" class="btn btn-soft rounded-pill">Detalii</a>
                         </div>
                     </div>
                 </article>

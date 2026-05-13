@@ -45,7 +45,7 @@ try {
             throw new RuntimeException('Exista deja un eveniment publicat in acel interval.');
         }
 
-        $insertEvent = $pdo->prepare('INSERT INTO evenimente (titlu, descriere, data_eveniment, ora_inceput, ora_sfarsit, pret, id_locatie) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $insertEvent = $pdo->prepare('INSERT INTO evenimente (titlu, descriere, data_eveniment, ora_inceput, ora_sfarsit, pret, capacitate, id_locatie) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
         $insertEvent->execute([
             $request['titlu'],
             $request['descriere'],
@@ -53,6 +53,7 @@ try {
             $request['ora_inceput'],
             $request['ora_sfarsit'],
             $request['pret'],
+            max(1, (int)($request['capacitate_estimata'] ?? 100)),
             $request['id_locatie'],
         ]);
 

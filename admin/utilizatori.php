@@ -8,7 +8,7 @@ render_header('Admin - utilizatori');
 <section class="mb-4">
     <span class="card-tag mb-3"><i class="bi bi-people"></i> utilizatori</span>
     <h1 class="section-title mb-2">Conturi din sistem</h1>
-    <p class="section-subtitle">Acum vezi separat clientii, organizatorii si adminii.</p>
+    <p class="section-subtitle">Vizualizeaza si administreaza conturile utilizatorilor inregistrati.</p>
 </section>
 
 <?php if ($users): ?>
@@ -25,13 +25,32 @@ render_header('Admin - utilizatori');
                         </div>
                         <span class="<?= $role === 'admin' ? 'badge-soft success' : ($role === 'organizator' ? 'badge-soft warning' : 'badge-soft neutral') ?>"><?= e(role_label($user['rol'] ?? 'client')) ?></span>
                     </div>
-                    <div class="table-lite small">
+                    <div class="table-lite small mb-3">
                         <table class="table-lite">
                             <tr><td class="text-secondary-emphasis">Creat la</td><td><?= e(format_date_ro($user['data_creare'] ?? '')) ?></td></tr>
                             <tr><td class="text-secondary-emphasis">Email</td><td><?= e($user['email']) ?></td></tr>
                             <tr><td class="text-secondary-emphasis">Rol aplicatie</td><td><?= e(role_label($user['rol'] ?? 'client')) ?></td></tr>
                         </table>
                     </div>
+                    <?php $currentUserId = (int)$_SESSION['user_id']; ?>
+                    <?php if ((int)$user['id_utilizator'] !== $currentUserId): ?>
+                    <form method="post" action="<?= e(url('admin/schimba_rol_utilizator.php')) ?>" class="d-flex flex-wrap gap-2 align-items-center">
+                        <input type="hidden" name="id" value="<?= (int)$user['id_utilizator'] ?>">
+                        <select name="rol" class="form-select form-select-sm" style="width:auto">
+                            <option value="client"      <?= $role === 'client'      ? 'selected' : '' ?>>Client</option>
+                            <option value="organizator" <?= $role === 'organizator' ? 'selected' : '' ?>>Organizator</option>
+                            <option value="admin"       <?= $role === 'admin'       ? 'selected' : '' ?>>Admin</option>
+                        </select>
+                        <button type="submit" class="btn btn-soft btn-sm rounded-pill">Schimba rol</button>
+                        <a href="<?= e(url('admin/sterge_utilizator.php?id=' . (int)$user['id_utilizator'])) ?>"
+                           class="btn btn-soft btn-sm rounded-pill text-danger"
+                           onclick="return confirm('Stergi contul lui <?= e(addslashes($user['nume'])) ?>? Actiunea nu poate fi anulata.')">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </form>
+                    <?php else: ?>
+                        <span class="small text-secondary-emphasis">Contul tau curent</span>
+                    <?php endif; ?>
                 </div>
             </article>
         <?php endforeach; ?>

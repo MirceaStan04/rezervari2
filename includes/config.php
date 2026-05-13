@@ -43,7 +43,7 @@ function auto_store_last_page(): void
     }
 
     $path = parse_url($uri, PHP_URL_PATH) ?: '';
-    if (preg_match('#/(login|logout|register|gen_hash|test_conexiune)\.php$#', $path)) {
+    if (preg_match('#/(login|logout|register|gen_hash|test_conexiune|salveaza_profil|rezervare_submit|trimite_cerere_eveniment|admin/salveaza_locatie|admin/sterge_locatie|admin/salveaza_eveniment|admin/sterge_eveniment|admin/schimba_rol_utilizator|admin/sterge_utilizator|admin/proceseaza_cerere_eveniment|admin/update_rezervare_status)\.php$#', $path)) {
         return;
     }
 
