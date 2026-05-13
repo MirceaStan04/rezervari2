@@ -40,18 +40,27 @@ function render_header(string $title = 'EventFlow – Gestiune Evenimente Sibiu'
                 <div class="collapse navbar-collapse" id="navMain">
                     <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
                         <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('index.php')) ?>">Acasa</a></li>
-                        <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('locatii.php')) ?>">Locatii</a></li>
-                        <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('evenimente.php')) ?>">Evenimente</a></li>
-                        <?php if (is_client()): ?>
-                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('rezervarile-mele.php')) ?>">Inscrierile mele</a></li>
-                        <?php endif; ?>
-                        <?php if (is_organizer()): ?>
+
+                        <?php if (is_admin()): ?>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('admin/index.php')) ?>">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('admin/evenimente.php')) ?>">Evenimente</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('admin/locatii.php')) ?>">Locatii</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('admin/utilizatori.php')) ?>">Utilizatori</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('admin/rezervari.php')) ?>">Inscrieri</a></li>
+                        <?php elseif (is_organizer()): ?>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('evenimente.php')) ?>">Evenimente</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('locatii.php')) ?>">Locatii</a></li>
                             <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('propune_eveniment.php')) ?>">Propune eveniment</a></li>
                             <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('cererile-mele.php')) ?>">Cererile mele</a></li>
+                        <?php elseif (is_client()): ?>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('evenimente.php')) ?>">Evenimente</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('locatii.php')) ?>">Locatii</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('rezervarile-mele.php')) ?>">Inscrierile mele</a></li>
+                        <?php else: ?>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('evenimente.php')) ?>">Evenimente</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('locatii.php')) ?>">Locatii</a></li>
                         <?php endif; ?>
-                        <?php if (is_admin()): ?>
-                            <li class="nav-item"><a class="nav-link px-3" href="<?= e(url('admin/index.php')) ?>">Admin</a></li>
-                        <?php endif; ?>
+
                         <li class="nav-item ms-lg-1">
                             <button class="theme-toggle" type="button" data-theme-toggle aria-label="Schimba tema">
                                 <i class="bi bi-moon-stars-fill"></i>
