@@ -46,16 +46,16 @@ render_header('EventFlow – Gestiune Evenimente Sibiu');
     </div>
     <div class="hero-stats-row">
         <div class="hero-stat">
-            <strong><?= (int)$stats['locatii'] ?></strong>
-            <span>locatii disponibile</span>
+            <i class="bi bi-buildings" style="font-size:1.3rem;color:var(--accent-text);flex-shrink:0"></i>
+            <div><strong><?= (int)$stats['locatii'] ?></strong><span>locatii</span></div>
         </div>
         <div class="hero-stat">
-            <strong><?= (int)$stats['evenimente'] ?></strong>
-            <span>evenimente publicate</span>
+            <i class="bi bi-calendar2-check" style="font-size:1.3rem;color:var(--accent-text);flex-shrink:0"></i>
+            <div><strong><?= (int)$stats['evenimente'] ?></strong><span>evenimente</span></div>
         </div>
         <div class="hero-stat">
-            <strong><?= (int)$stats['inscrieri'] ?></strong>
-            <span>inscrieri totale</span>
+            <i class="bi bi-ticket-perforated" style="font-size:1.3rem;color:var(--accent-text);flex-shrink:0"></i>
+            <div><strong><?= (int)$stats['inscrieri'] ?></strong><span>inscrieri</span></div>
         </div>
     </div>
     <?php if (is_admin() && event_requests_ready($pdo) && $stats['cereri'] > 0): ?>
@@ -70,10 +70,12 @@ render_header('EventFlow – Gestiune Evenimente Sibiu');
 </section>
 
 <!-- ─── 3 roluri ──────────────────────────────────────────────────────────── -->
-<section class="mb-5">
-    <div class="mb-4">
-        <h2 class="section-title mb-1">Trei roluri. Un flux simplu.</h2>
-        <p class="section-subtitle">Fiecare utilizator are zona lui clara in platforma.</p>
+<section class="mb-5 pt-2">
+    <div class="panel-header mb-4">
+        <div>
+            <h2 class="section-title mb-1">Trei roluri. Un flux simplu.</h2>
+            <p class="section-subtitle mb-0">Fiecare utilizator are zona lui clara in platforma.</p>
+        </div>
     </div>
     <div class="features-grid">
         <div class="feature-card glass-panel">

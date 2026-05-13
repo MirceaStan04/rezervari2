@@ -206,7 +206,7 @@ img { display: block; }
 .kanban-grid    { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
 
 /* ─── Hero ────────────────────────────────────────────────────────────────── */
-.hero-section { padding: clamp(2.5rem, 5vw, 4.5rem) 0 clamp(2rem, 4vw, 3.5rem); }
+.hero-section { padding: clamp(3rem, 6vw, 5.5rem) 0 clamp(2.5rem, 5vw, 4rem); }
 .hero-kicker {
     display: inline-flex; align-items: center; gap: .55rem;
     border-radius: var(--r-pill); background: var(--accent-dim);
@@ -214,28 +214,36 @@ img { display: block; }
     font-weight: 700; font-size: .8rem; letter-spacing: .03em;
 }
 .hero-title {
-    font-size: clamp(2.4rem, 4vw, 4rem);
-    line-height: 1.07; font-weight: 800; letter-spacing: -.04em;
+    font-size: clamp(2.6rem, 5vw, 4.2rem);
+    line-height: 1.06; font-weight: 800; letter-spacing: -.04em;
     margin: .9rem 0 1rem;
 }
-.hero-subtitle { color: var(--muted); font-size: 1.04rem; max-width: 58rem; line-height: 1.7; }
+.hero-subtitle { color: var(--muted); font-size: 1.05rem; max-width: 52rem; line-height: 1.75; }
 .hero-stats-row {
-    display: flex; gap: 2.5rem; flex-wrap: wrap;
-    margin-top: 1.75rem; padding-top: 1.75rem;
-    border-top: 1px solid var(--border);
+    display: flex; gap: .75rem; flex-wrap: wrap;
+    margin-top: 2rem;
 }
-.hero-stat strong { display: block; font-size: 1.7rem; font-weight: 800; line-height: 1; }
-.hero-stat span   { color: var(--muted); font-size: .85rem; margin-top: .2rem; display: block; }
+.hero-stat {
+    display: flex; align-items: center; gap: .8rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: .8rem 1.1rem;
+    min-width: 130px;
+}
+.hero-stat strong {
+    display: block; font-size: 1.8rem; font-weight: 800; line-height: 1;
+    color: var(--text);
+}
+.hero-stat span { color: var(--muted); font-size: .8rem; line-height: 1.3; display: block; margin-top: .15rem; }
 
 /* ─── Features (3 roluri) ─────────────────────────────────────────────────── */
-.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
-.feature-card  { padding: 1.75rem 1.5rem; text-align: center; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.feature-card  { padding: 2rem 1.5rem; text-align: center; }
 .feature-icon  {
-    width: 52px; height: 52px; border-radius: 16px; margin: 0 auto 1.1rem;
+    width: 56px; height: 56px; border-radius: 18px; margin: 0 auto 1.1rem;
     display: flex; align-items: center; justify-content: center;
-    background: var(--accent-dim); color: var(--accent-text); font-size: 1.3rem;
+    background: var(--accent-dim); color: var(--accent-text); font-size: 1.4rem;
 }
-.feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+.feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .45rem; }
 
 /* kept for backward compat (locatie.php hero-side) */
 .hero-copy { padding: clamp(1.5rem, 2.5vw, 2.5rem); }
@@ -382,12 +390,14 @@ img { display: block; }
 @media (max-width: 991px) {
     .hero-grid, .split-panel, .kanban-grid { grid-template-columns: 1fr; }
     .metric-row { grid-template-columns: repeat(2,1fr); }
-    .features-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .features-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
 }
 @media (max-width: 640px) {
-    .hero-title { font-size: 2.1rem; }
+    .hero-title { font-size: 2.2rem; }
     .brand-mark small { display: none; }
     .metric-row { grid-template-columns: 1fr; }
     .kanban-grid { grid-template-columns: 1fr; }
-    .hero-stats-row { gap: 1.5rem; }
+    .hero-stats-row { gap: .6rem; }
+    .hero-stat { min-width: 0; flex: 1 1 calc(50% - .3rem); }
+    .features-grid { grid-template-columns: 1fr; }
 }
