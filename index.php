@@ -29,7 +29,7 @@ render_header('EventFlow – Gestiune Evenimente Sibiu');
     </span>
     <h1 class="hero-title">
         Descopera evenimentele<br>
-        din Sibiu &mdash; <span class="accent">rezerva-ti locul.</span>
+        din Sibiu &mdash; <span class="accent">rezervati locul.</span>
     </h1>
     <p class="hero-subtitle">
         Descopera evenimentele din Sibiu, alege-ti locul si confirma inscrierea in cateva secunde.
